@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>DET 在线练习</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📚</text></svg>">
+<style>
+:root{
+  --bg:#f6f7f9; --card:#fff; --border:#e3e5e8; --text:#1c1c1e; --muted:#6b7280;
+  --blue:#2563eb; --blue-bg:#eff6ff;
+  --easy-bg:#ecfdf5; --easy-fg:#047857; --med-bg:#fff7ed; --med-fg:#9a3412; --hard-bg:#fef2f2; --hard-fg:#b91c1c;
+}
+*{box-sizing:border-box}
+body{margin:0;font:15px/1.65 -apple-system,"Segoe UI","Microsoft YaHei",sans-serif;color:var(--text);background:var(--bg)}
+.wrap{max-width:980px;margin:0 auto;padding:28px 16px 60px}
+h1{font-size:24px;margin:0 0 4px}
+.lead{color:var(--muted);margin:0 0 20px}
+.tips{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px 18px;margin-bottom:22px}
+.tips b{color:var(--blue)}
+.tips ol{margin:6px 0 0;padding-left:20px}
+.tips li{margin:3px 0}
+.task{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:18px;margin-bottom:18px}
+.task-head{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:12px}
+.task-head h2{font-size:18px;margin:0}
+.task-head .sub{color:var(--muted);font-size:13px}
+.task-head .spacer{flex:1}
+a.btn,button{font:inherit;cursor:pointer;border:1px solid var(--border);background:#fff;border-radius:8px;padding:6px 12px;color:var(--text);text-decoration:none;display:inline-block}
+a.btn.primary{background:var(--blue);border-color:var(--blue);color:#fff}
+a.btn.primary:hover{background:#1d4ed8}
+button:hover,a.btn:hover{background:#f3f4f6}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:8px}
+.it{display:flex;align-items:center;gap:6px;border:1px solid var(--border);border-radius:9px;padding:7px 8px 7px 10px;min-width:0}
+.it:hover{border-color:#bfdbfe;background:#fbfdff}
+.it a{color:inherit;text-decoration:none;display:flex;align-items:center;gap:7px;flex:1;min-width:0}
+.it .num{font-weight:800;font-variant-numeric:tabular-nums}
+.it .t{font-size:12.5px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.it .cp{border:0;background:none;padding:2px 4px;font-size:13px;color:#9ca3af}
+.it .cp:hover{color:var(--blue);background:none}
+.lv{font-size:11.5px;font-weight:700;padding:0 7px;border-radius:99px;white-space:nowrap}
+.lv.easy{background:var(--easy-bg);color:var(--easy-fg)}
+.lv.medium{background:var(--med-bg);color:var(--med-fg)}
+.lv.hard{background:var(--hard-bg);color:var(--hard-fg)}
+.filters{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+.filters button{font-size:13px;padding:3px 10px}
+.filters button.on{background:var(--blue);border-color:var(--blue);color:#fff}
+#toast{position:fixed;left:50%;top:16px;transform:translateX(-50%);background:#111827;color:#fff;padding:8px 14px;border-radius:8px;font-size:13.5px;display:none;z-index:10}
+footer{color:var(--muted);font-size:12px;text-align:center;margin-top:30px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>📚 DET 多邻国 · 在线练习</h1>
+  <p class="lead">点任意一道题开始练习。做题过程会自动保存，交卷后老师会立刻收到。</p>
+
+  <div class="tips">
+    <b>做题前请看：</b>
+    <ol>
+      <li>请用 <b>Chrome / Edge / Safari</b> 浏览器打开。在微信、飞书里打开时，请点右上角「…」→「在浏览器打开」。</li>
+      <li>第一次做题先填<b>你的名字</b>，老师靠名字认出你。以后每次都用同一个名字。</li>
+      <li>中途关掉也没关系，再打开同一题会问你要不要接着做。</li>
+      <li>遇到不认识的词：用鼠标选中它，点「📌 标为生词」，老师会收到。</li>
+    </ol>
+  </div>
+
+  <section class="task" id="ir">
+    <div class="task-head">
+      <h2>Interactive Reading</h2><span class="sub">互动阅读 · <span id="ir-n"></span> 套 · 每套 8 分钟</span>
+      <span class="spacer"></span>
+      <a class="btn primary" href="ir.html">打开练习页 →</a>
+    </div>
+    <div class="filters" data-for="ir"></div>
+    <div class="grid" id="ir-grid"></div>
+  </section>
+
+  <section class="task" id="iw">
+    <div class="task-head">
+      <h2>Interactive Writing</h2><span class="sub">互动写作 · <span id="iw-n"></span> 题 · 5 分钟 + 3 分钟</span>
+      <span class="spacer"></span>
+      <a class="btn primary" href="iw.html">打开题目列表 →</a>
+    </div>
+    <div class="filters" data-for="iw"></div>
+    <div class="grid" id="iw-grid"></div>
+  </section>
+
+  <footer>仅供课堂练习使用 · 更新于 2026/9/17</footer>
+</div>
+<div id="toast"></div>
+
+<script>
+const IR = [{"num":401,"lv":"medium"},{"num":402,"lv":"medium"},{"num":411,"lv":"medium"},{"num":412,"lv":"medium"},{"num":415,"lv":"easy"},{"num":416,"lv":"medium"},{"num":421,"lv":"medium"},{"num":426,"lv":"easy"},{"num":427,"lv":"easy"},{"num":438,"lv":"medium"},{"num":440,"lv":"easy"},{"num":441,"lv":"easy"},{"num":443,"lv":"medium"},{"num":445,"lv":"medium"},{"num":446,"lv":"medium"},{"num":448,"lv":"medium"},{"num":451,"lv":"medium"},{"num":452,"lv":"medium"},{"num":455,"lv":"medium"},{"num":456,"lv":"medium"},{"num":457,"lv":"medium"},{"num":461,"lv":"medium"},{"num":462,"lv":"medium"},{"num":463,"lv":"medium"},{"num":466,"lv":"medium"},{"num":470,"lv":"easy"},{"num":472,"lv":"medium"},{"num":480,"lv":"easy"},{"num":481,"lv":"medium"},{"num":483,"lv":"easy"}];
+const IW = [{"num":23,"lv":"medium","type":"Describe","prompt":"Expound on the concept of \"fear of missing out\" or FOMO in the era of social media. How do"},{"num":26,"lv":"medium","type":"Argue","prompt":"Should students be required to learn a second language in school? Why or why not? Give spe"},{"num":54,"lv":"medium","type":"Recount","prompt":"Describe the happiest day in your life so far. Elaborate on the event, why it made you hap"},{"num":55,"lv":"medium","type":"Argue","prompt":"Can video games be considered as a legitimate form of art? Justify your answer by comparin"},{"num":57,"lv":"medium","type":"Recount","prompt":"Describe the most memorable holiday you’ve ever had. What made this holiday so special? Ho"},{"num":69,"lv":"medium","type":"Recount","prompt":"Who is a person you admire? Why do you look up to this person? Share a story about them th"},{"num":71,"lv":"medium","type":"Argue","prompt":"Smartphones have changed the way we communicate and interact with the world around us. Ana"},{"num":88,"lv":"medium","type":"Describe","prompt":"Discuss the concept of self-reliance. In what ways do you believe being self-reliant is im"},{"num":94,"lv":"medium","type":"Argue","prompt":"Multicultural societies, in which there is a mixture of different ethnic peoples, bring mo"},{"num":109,"lv":"hard","type":"Argue","prompt":"The internet has democratized access to information but has also led to some people believ"},{"num":119,"lv":"medium","type":"Argue","prompt":"Do you think that community service should be a mandatory part of school curriculum? Why o"},{"num":120,"lv":"easy","type":"Describe","prompt":"Describe your favorite season. What makes it special for you? What activities do you usual"},{"num":738,"lv":"medium","type":"Describe","prompt":"Describe a specific action you believe individuals can take to help protect the environmen"},{"num":820,"lv":"hard","type":"Argue","prompt":"Discuss the role of money in achieving happiness. Can money truly buy happiness, or is it "},{"num":875,"lv":"medium","type":"Describe","prompt":"Discuss the impact of tourism on local cultures and environments. Explain both the positiv"},{"num":909,"lv":"hard","type":"Describe","prompt":"Discuss the impact of single-use plastics on the environment. What steps can individuals a"},{"num":928,"lv":"medium","type":"Describe","prompt":"Many communities organize local events such as festivals, fairs, or parades to bring peopl"},{"num":960,"lv":"medium","type":"Describe","prompt":"Discuss how traditional cuisine can impact national identity and cultural heritage. Provid"},{"num":964,"lv":"medium","type":"Argue","prompt":"Discuss the advantages and disadvantages of online learning compared to traditional in-cla"},{"num":1007,"lv":"medium","type":"Describe","prompt":"Describe one way in which you think society has improved over the last few years. Why do y"},{"num":1037,"lv":"medium","type":"Recount","prompt":"Describe a time when you saved money to buy something special. What did you save for, and "},{"num":1043,"lv":"medium","type":"Recount","prompt":"Describe a memorable experience you had with a friend or family member. What made this exp"},{"num":1143,"lv":"medium","type":"Describe","prompt":"Describe your favorite piece of art, whether it is a painting, song, movie, or book. Why d"},{"num":1146,"lv":"medium","type":"Describe","prompt":"What is one value or belief that is very important to you? Why is it important? How does i"},{"num":1154,"lv":"medium","type":"Argue","prompt":"Discuss whether you believe art should be a compulsory subject in school curricula. What i"},{"num":1194,"lv":"medium","type":"Describe","prompt":"Discuss the impact of having a hobby on an individual's life. How can engaging in hobbies "},{"num":1198,"lv":"medium","type":"Argue","prompt":"If you had the opportunity to give a large sum of money to one cause or organization, wher"},{"num":1210,"lv":"hard","type":"Describe","prompt":"Consider the impact of public art, such as sculptures, murals, and installations, in urban"},{"num":1224,"lv":"medium","type":"Argue","prompt":"Should professional athletes be considered role models for the youth? Discuss the potentia"},{"num":1675,"lv":"medium","type":"Argue","prompt":"Are online friendships as valuable as in-person friendships? Why or why not? Support your "}];
+const LV = { easy: 'Easy', medium: 'Medium', hard: 'Hard' };
+const TYPE = { Argue: '论证', Describe: '说明', Recount: '经历' };
+const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const state = { ir: 'all', iw: 'all' };
+
+function toast(t) {
+  const el = document.getElementById('toast');
+  el.textContent = t; el.style.display = 'block';
+  clearTimeout(toast.h); toast.h = setTimeout(() => el.style.display = 'none', 1800);
+}
+async function copy(url) {
+  try { await navigator.clipboard.writeText(url); }
+  catch (e) {
+    const ta = document.createElement('textarea'); ta.value = url; document.body.appendChild(ta);
+    ta.select(); document.execCommand('copy'); ta.remove();
+  }
+  toast('已复制链接：' + url);
+}
+
+const LISTS = {
+  ir: { data: IR, page: 'ir.html', title: x => '' },
+  iw: { data: IW, page: 'iw.html', title: x => (TYPE[x.type] ? TYPE[x.type] + ' · ' : '') + x.prompt }
+};
+function render(key) {
+  const L = LISTS[key];
+  const list = L.data.filter(x => state[key] === 'all' || x.lv === state[key]);
+  const grid = document.getElementById(key + '-grid');
+  grid.innerHTML = list.map(x => {
+    const href = L.page + '#' + x.num;
+    const t = L.title(x);
+    return `<div class="it"><a href="${href}" title="${esc(t)}"><span class="num">#${x.num}</span><span class="lv ${x.lv}">${LV[x.lv] || x.lv}</span>${t ? `<span class="t">${esc(t)}</span>` : ''}</a>` +
+      `<button class="cp" data-href="${href}" title="复制这道题的链接">🔗</button></div>`;
+  }).join('');
+  grid.querySelectorAll('.cp').forEach(b => b.onclick = () => copy(new URL(b.dataset.href, location.href).href));
+}
+function filters(key) {
+  const box = document.querySelector(`.filters[data-for="${key}"]`);
+  const lvs = ['all', ...Object.keys(LV).filter(l => LISTS[key].data.some(x => x.lv === l))];
+  box.innerHTML = lvs.map(l => {
+    const n = l === 'all' ? LISTS[key].data.length : LISTS[key].data.filter(x => x.lv === l).length;
+    return `<button data-l="${l}" class="${state[key] === l ? 'on' : ''}">${l === 'all' ? '全部' : LV[l]} (${n})</button>`;
+  }).join('');
+  box.querySelectorAll('button').forEach(b => b.onclick = () => { state[key] = b.dataset.l; filters(key); render(key); });
+}
+document.getElementById('ir-n').textContent = IR.length;
+document.getElementById('iw-n').textContent = IW.length;
+['ir', 'iw'].forEach(k => { filters(k); render(k); });
+</script>
+</body>
+</html>

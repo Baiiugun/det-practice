@@ -1,0 +1,1021 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Interactive Writing 互动写作 · 学生练习版（云同步）</title>
+<style>
+:root{
+  --bg:#f6f7f9; --card:#fff; --border:#e3e5e8; --text:#1c1c1e; --muted:#6b7280;
+  --blue:#2563eb; --blue-dark:#1d4ed8;
+  --easy-bg:#ecfdf5; --easy-fg:#047857; --easy-bd:#a7f3d0;
+  --med-bg:#fff7ed; --med-fg:#9a3412; --med-bd:#fed7aa;
+  --hard-bg:#fef2f2; --hard-fg:#b91c1c; --hard-bd:#fecaca;
+  --argue-bg:#eef2ff; --argue-fg:#3730a3;
+  --desc-bg:#f0f9ff; --desc-fg:#075985;
+  --rec-bg:#fdf4ff; --rec-fg:#86198f;
+  --tag-bg:#f3f4f6; --tag-fg:#374151;
+  --green:#16a34a; --red:#dc2626;
+}
+*{box-sizing:border-box}
+body{margin:0;font:15px/1.7 -apple-system,"Segoe UI","Microsoft YaHei",sans-serif;color:var(--text);background:var(--bg)}
+header{position:sticky;top:0;z-index:30;background:#fff;border-bottom:1px solid var(--border);padding:12px 16px}
+header h1{font-size:17px;margin:0 0 2px;font-weight:800}
+header .sub{font-size:12.5px;color:var(--muted)}
+.wrap{max-width:980px;margin:0 auto;padding:14px 16px 60px}
+button,input,select,textarea{font:inherit}
+button{cursor:pointer;border:1px solid var(--border);background:#fff;border-radius:7px;padding:6px 12px;color:var(--text)}
+button:hover{background:#f3f4f6}
+button.primary{background:var(--blue);color:#fff;border-color:var(--blue)}
+button.primary:hover{background:var(--blue-dark)}
+button.on{background:var(--blue);color:#fff;border-color:var(--blue)}
+button:disabled{opacity:.45;cursor:not-allowed}
+input[type=text],input[type=search]{border:1px solid var(--border);border-radius:7px;padding:6px 10px;background:#fff}
+select{border:1px solid var(--border);border-radius:7px;padding:6px 10px;background:#fff}
+.card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px}
+.filters{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:12px}
+.filters .grp{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.filters .lbl{font-size:12px;color:var(--muted);font-weight:700;margin-right:2px}
+.count-line{font-size:13px;color:var(--muted);margin:6px 2px 12px}
+.badge{display:inline-block;font-size:11.5px;font-weight:700;padding:2px 8px;border-radius:99px;border:1px solid transparent}
+.badge.easy{background:var(--easy-bg);color:var(--easy-fg);border-color:var(--easy-bd)}
+.badge.medium{background:var(--med-bg);color:var(--med-fg);border-color:var(--med-bd)}
+.badge.hard{background:var(--hard-bg);color:var(--hard-fg);border-color:var(--hard-bd)}
+.badge.type-Argue{background:var(--argue-bg);color:var(--argue-fg)}
+.badge.type-Describe{background:var(--desc-bg);color:var(--desc-fg)}
+.badge.type-Recount{background:var(--rec-bg);color:var(--rec-fg)}
+.tag{display:inline-block;font-size:11.5px;padding:2px 8px;border-radius:99px;background:var(--tag-bg);color:var(--tag-fg);margin:0 4px 4px 0}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:720px){.grid{grid-template-columns:1fr}}
+.qcard{position:relative;display:flex;flex-direction:column;gap:8px}
+.qcard .top{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.qcard .num{font-weight:800;font-size:15px}
+.qcard .star{margin-left:auto;background:none;border:none;font-size:18px;padding:2px 4px;color:#d1d5db}
+.qcard .star.on{color:#f59e0b}
+.qcard .done-flag{font-size:11.5px;color:var(--green);font-weight:700}
+.qcard .p1{font-size:14px;color:#374151;line-height:1.65;max-height:6.6em;overflow:hidden}
+.qcard .actions{display:flex;gap:8px;margin-top:2px}
+.empty{color:var(--muted);padding:40px 0;text-align:center}
+#view-practice,#view-result{max-width:760px;margin:0 auto}
+.timerbox{display:flex;align-items:center;justify-content:center;gap:10px;margin:14px 0}
+.timerbox .t{font-variant-numeric:tabular-nums;font-weight:800;font-size:34px;color:var(--text)}
+.timerbox .t.warn{color:var(--red)}
+.stage-instr{font-style:italic;color:var(--muted);font-size:13.5px;margin-bottom:6px}
+.prompt-box{background:#f8fafc;border-left:3px solid #94a3b8;border-radius:8px;padding:12px 14px;margin:10px 0;font-size:15px;line-height:1.7}
+textarea{width:100%;min-height:220px;border:1px solid var(--border);border-radius:8px;padding:12px;font-size:15px;line-height:1.7;resize:vertical}
+textarea:disabled{background:#f3f4f6;color:#9ca3af}
+.readonly-box{background:#f3f4f6;border:1px solid var(--border);border-radius:8px;padding:12px;white-space:pre-wrap;color:#374151;font-size:14.5px;line-height:1.7}
+.wc-row{display:flex;align-items:center;gap:10px;margin:8px 0;font-size:13px;color:var(--muted)}
+.wc-bar{flex:1;height:7px;background:#e5e7eb;border-radius:99px;overflow:hidden}
+.wc-bar i{display:block;height:100%;background:#9ca3af;border-radius:99px}
+.wc-bar.ok i{background:var(--green)}
+.wc-num.ok{color:var(--green);font-weight:700}
+.foot-actions{display:flex;justify-content:space-between;gap:10px;margin-top:14px}
+.section-title{font-size:13px;font-weight:800;color:var(--muted);letter-spacing:.04em;margin:18px 0 6px}
+.entry-row{display:flex;flex-direction:column;gap:10px;max-width:420px;margin:20px auto}
+.entry-row label{font-size:13px;font-weight:700;color:#374151}
+.entry-row input[type=text]{width:100%;padding:9px 12px}
+.mode-row{display:flex;gap:10px}
+.mode-row button{flex:1}
+.result-part{margin:14px 0}
+.result-meta{font-size:12.5px;color:var(--muted);margin-bottom:6px}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#111827;color:#fff;padding:9px 16px;border-radius:8px;font-size:13.5px;z-index:100;opacity:0;pointer-events:none;transition:opacity .2s}
+.toast.show{opacity:1}
+[hidden]{display:none!important}
+.copytext{width:100%;min-height:160px;font-family:ui-monospace,Consolas,monospace;font-size:12.5px}
+</style>
+</head>
+<body>
+<header>
+  <h1>Interactive Writing 互动写作 · Essentials 30 题练习</h1>
+  <div class="sub">Part 1 写 5 分钟，Part 2 追问写 3 分钟；本练习追问为固定追问（同一题追问内容不变）。</div>
+</header>
+<div class="wrap">
+
+  <div id="view-list">
+    <div class="card">
+      <div class="filters">
+        <div class="grp"><span class="lbl">难度</span><span id="f-diff"></span></div>
+        <div class="grp"><span class="lbl">分类</span><select id="f-cat"></select></div>
+        <div class="grp"><span class="lbl">题型</span><span id="f-type"></span></div>
+        <div class="grp"><span class="lbl">状态</span><span id="f-status"></span></div>
+        <div class="grp"><button id="f-fav">★ 只看收藏</button></div>
+        <div class="grp"><input type="search" id="f-q" placeholder="题号或关键词搜索" style="width:180px"></div>
+        <div class="grp"><button id="f-rand" class="primary">🎲 随机抽一题</button></div>
+        <div class="grp"><button id="f-reset">重置筛选</button></div>
+      </div>
+      <div class="count-line" id="count-line"></div>
+      <div class="grid" id="q-grid"></div>
+      <div class="empty" id="q-empty" hidden>没有符合筛选条件的题目</div>
+    </div>
+  </div>
+
+  <div id="view-practice" hidden>
+    <div class="card">
+      <div id="pv-entry">
+        <h2 id="pv-title" style="margin-top:0"></h2>
+        <div class="entry-row">
+          <label>姓名</label>
+          <input type="text" id="pv-name" placeholder="请输入你的姓名">
+          <label>模式</label>
+          <div class="mode-row">
+            <button id="pv-mode-timed" class="on">计时模式（默认）</button>
+            <button id="pv-mode-untimed">不计时</button>
+          </div>
+          <div style="display:flex;gap:10px;margin-top:6px">
+            <button id="pv-start" class="primary" style="flex:1">开始练习</button>
+            <button id="pv-cancel">取消</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="pv-prep" hidden>
+        <div class="stage-instr" id="prep-instr"></div>
+        <div class="prompt-box" id="prep-prompt"></div>
+        <div class="timerbox"><span>准备倒计时</span><span class="t" id="prep-timer">0:30</span></div>
+        <div style="text-align:center"><button id="prep-go" class="primary">开始作答</button></div>
+      </div>
+
+      <div id="pv-part1" hidden>
+        <div id="p1-readonly" hidden>
+          <div class="section-title">你的 Part 1（只读）</div>
+          <div class="readonly-box" id="p1-readonly-text"></div>
+        </div>
+        <div id="p1-editing">
+          <div class="stage-instr" id="p1-instr"></div>
+          <div class="prompt-box" id="p1-prompt"></div>
+          <div class="timerbox" id="p1-timerbox"><span>剩余时间</span><span class="t" id="p1-timer">5:00</span></div>
+          <textarea id="p1-text" spellcheck="false" autocomplete="off" autocorrect="off" autocapitalize="off" placeholder="在这里作答 Part 1..."></textarea>
+          <div class="wc-row">
+            <span>字数 <b class="wc-num" id="p1-wc-num">0</b> / 建议 120 词以上</span>
+            <span class="wc-bar" id="p1-wc-bar"><i style="width:0%"></i></span>
+          </div>
+          <div class="foot-actions">
+            <button id="p1-abandon">放弃并返回</button>
+            <button id="p1-next" class="primary">NEXT</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="pv-part2" hidden>
+        <div class="section-title">你的 Part 1（只读）</div>
+        <div class="readonly-box" id="p2-p1-readonly-text"></div>
+        <div class="stage-instr" id="p2-instr" style="margin-top:14px"></div>
+        <div class="prompt-box" id="p2-prompt"></div>
+        <div class="timerbox" id="p2-timerbox"><span>剩余时间</span><span class="t" id="p2-timer">3:00</span></div>
+        <textarea id="p2-text" spellcheck="false" autocomplete="off" autocorrect="off" autocapitalize="off" placeholder="在这里作答 Part 2..."></textarea>
+        <div class="wc-row">
+          <span>字数 <b class="wc-num" id="p2-wc-num">0</b> / 建议 90 词以上</span>
+          <span class="wc-bar" id="p2-wc-bar"><i style="width:0%"></i></span>
+        </div>
+        <div class="foot-actions">
+          <button id="p2-abandon">放弃并返回</button>
+          <button id="p2-submit" class="primary">提交</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="view-result" hidden>
+    <div class="card">
+      <h2 style="margin-top:0" id="res-title"></h2>
+      <div class="result-part">
+        <div class="section-title">Part 1</div>
+        <div class="result-meta" id="res-p1-meta"></div>
+        <div class="prompt-box" id="res-p1-prompt"></div>
+        <div class="readonly-box" id="res-p1-text"></div>
+      </div>
+      <div class="result-part">
+        <div class="section-title">Part 2</div>
+        <div class="result-meta" id="res-p2-meta"></div>
+        <div class="prompt-box" id="res-p2-prompt"></div>
+        <div class="readonly-box" id="res-p2-text"></div>
+      </div>
+      <div class="foot-actions">
+        <button id="res-back">返回题目列表</button>
+        <div style="display:flex;gap:8px">
+          <button id="res-copy" class="primary">📋 复制作答（发给老师批改）</button>
+          <button id="res-again">再练一次</button>
+        </div>
+      </div>
+      <textarea id="res-copytext" class="copytext" readonly hidden></textarea>
+    </div>
+  </div>
+
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+const DATA = [{"number": 23, "difficulty": "medium", "categories": ["Health & Well-Being", "Technology"], "part1": {"instruction": "Write about the topic below for 5 minutes.", "prep_seconds": 30, "timer_seconds": 300, "min_words": 120, "prompt": "Expound on the concept of \"fear of missing out\" or FOMO in the era of social media. How does it affect you or people around you? Provide some strategies to deal with it."}, "part2": {"instruction": "Write a follow-up response for 3 minutes.", "timer_seconds": 180, "min_words": 90, "prompt": "How does the \"fear of missing out\" affect the way people use social media or the amount of time they spend on social media? Suggest ways to balance social media use to prevent this issue."}, "prompt_type": "Describe", "followup_moves": ["分析影响", "提出方案"], "part1_zh": "阐述社交媒体时代的「错失恐惧症」（FOMO）。它怎样影响你或你身边的人？给出一些应对策略。", "part2_zh": "错失恐惧怎样影响人们使用社交媒体的方式或时长？提出平衡社交媒体使用、防止这个问题的办法。", "part1_tasks": ["解释 FOMO 是什么（用自己的话定义）", "说明它对你或身边人的具体影响", "给出至少两条应对策略"], "part1_outline": ["主题句：一句话定义 FOMO，点出它和社交媒体的关系", "影响：举一个自己或朋友的具体场景（如睡前刷手机到深夜）", "策略 1：具体做法 + 为什么有效", "策略 2：具体做法 + 为什么有效", "收束：FOMO 可以被管理"], "part2_tasks": ["说明 FOMO 怎样改变使用方式或使用时长（如频繁查看、不敢关通知）", "提出平衡使用的办法，并说明怎样防止问题"], "part2_bridge": "第一问已经写过应对策略，追问要写的是「使用行为」上的变化和「平衡使用」的办法。可以用 As I mentioned earlier 提一句第一问的策略，但要换成新的办法，比如设置使用时段、关闭推送。"}, {"number": 26, "difficulty": "medium", "categories": ["Education", "Travel & Culture"], "part1": {"instruction": "Write about the topic below for 5 minutes.", "prep_seconds": 30, "timer_seconds": 300, "min_words": 120, "prompt": "Should students be required to learn a second language in school? Why or why not? Give specific reasons to support your answer."}, "part2": {"instruction": "Write a follow-up response for 3 minutes.", "timer_seconds": 180, "min_words": 90, "prompt": "If a school decided to implement mandatory second language learning, how should they go about choosing which languages to offer? What factors should they consider in this decision?"}, "prompt_type": "Argue", "followup_moves": ["提出方案"], "part1_zh": "学生应该被要求在学校学第二语言吗？为什么？给出具体理由支持你的回答。", "part2_zh": "如果一所学校决定强制学习第二语言，应该怎样选择开设哪些语言？需要考虑哪些因素？", "part1_tasks": ["明确立场：应该 / 不应该 / 有条件地应该", "给出至少两个具体理由"], "part1_outline": ["立场句", "理由 1（如升学就业机会）+ 例子", "理由 2（如理解其他文化、锻炼思维）+ 例子", "让步：学业负担，并回应", "收束"], "part2_tasks": ["说明学校选择语言的方法", "列出要考虑的因素（至少两个），每个说明为什么重要"], "part2_bridge": "追问默认学校已经决定开设，所以不用再争论该不该。第一句直接写：Schools should consider several factors when choosing languages. 可以接回第一问的理由，比如「我提到的就业机会」可以变成因素之一：当地经济需要哪种语言。"}, {"number": 54, "difficulty": "medium", "categories": ["Health & Well-Being", "Personal Experiences & Development"], "part1": {"instruction": "Write about the topic below for 5 minutes.", "prep_seconds": 30, "timer_seconds": 300, "min_words": 120, "prompt": "Describe the happiest day in your life so far. Elaborate on the event, why it made you happy, and how it still affects you today."}, "part2": {"instruction": "Write a follow-up response for 3 minutes.", "timer_seconds": 180, "min_words": 90, "prompt": "How do you think revisiting such happy memories impact a person's current well-being and outlook towards life? Use your personal experience you described earlier to support your response."}, "prompt_type": "Recount", "followup_moves": ["分析影响", "深挖细节"], "part1_zh": "描述你迄今为止最快乐的一天。详细讲讲这件事、它为什么让你快乐，以及它现在仍怎样影响你。", "part2_zh": "你认为重温这样的快乐回忆会怎样影响一个人当下的幸福感和人生态度？用你前面描述的个人经历来支持你的回答。", "part1_tasks": ["讲清楚是哪一天、发生了什么", "解释为什么快乐", "说明它现在对你的影响"], "part1_outline": ["背景：时间、地点、和谁", "经过：两三个关键动作", "最快乐的瞬间：具体细节", "原因：为什么那一刻让你快乐", "影响：到现在仍然怎样影响你"], "part2_tasks": ["说明重温快乐回忆对当下幸福感的影响", "说明对人生态度的影响", "必须用第一问的那段经历举例"], "part2_bridge": "追问明确要求「用你前面描述的经历」，所以一定要点名回到第一问的那一天，例如 When I think back to the day I described earlier, ...。然后从「个人经历」上升到「一般规律」。"}, {"number": 55, "difficulty": "medium", "categories": ["Arts, Literature & Music", "Technology"], "part1": {"instruction": "Write about the topic below for 5 minutes.", "prep_seconds": 30, "timer_seconds": 300, "min_words": 120, "prompt": "Can video games be considered as a legitimate form of art? Justify your answer by comparing video games with traditional forms of art like painting, sculpture, music, etc."}, "part2": {"instruction": "Write a follow-up response for 3 minutes.", "timer_seconds": 180, "min_words": 90, "prompt": "How do elements like graphics, music and storytelling in video games contribute to its status as a potential art form? Use an example of a video game to explain your perspective."}, "prompt_type": "Argue", "followup_moves": ["聚焦一点", "深挖细节"], "part1_zh": "电子游戏能被看作一种正当的艺术形式吗？通过把电子游戏与绘画、雕塑、音乐等传统艺术形式比较，来论证你的回答。", "part2_zh": "电子游戏中的画面、音乐、故事叙述等元素，怎样帮助它成为一种潜在的艺术形式？用一款电子游戏举例说明你的看法。", "part1_tasks": ["明确立场：是 / 不是 / 部分是", "必须和传统艺术（绘画、雕塑、音乐等）做比较"], "part1_outline": ["立场句", "相似点：和绘画 / 音乐一样表达情感、需要创作技巧", "不同点：互动性，玩家参与创作体验", "回应反对意见：商业性、娱乐性", "收束"], "part2_tasks": ["说明画面、音乐、故事这些元素各自怎样体现艺术性（至少写两个）", "用一款具体游戏举例"], "part2_bridge": "追问从「整体能不能算艺术」聚焦到「具体元素」，还要求一个具体游戏。第一句直接写：Graphics, music and storytelling all help video games qualify as art. 然后选一款自己熟悉的游戏，逐个元素举例。"}, {"number": 57, "difficulty": "medium", "categories": ["Personal Experiences & Development", "Travel & Culture"], "part1": {"instruction": "Write about the topic below for 5 minutes.", "prep_seconds": 30, "timer_seconds": 300, "min_words": 120, "prompt": "Describe the most memorable holiday you’ve ever had. What made this holiday so special? How does it continue to impact you today?"}, "part2": {"instruction": "Write a follow-up response for 3 minutes.", "timer_seconds": 180, "min_words": 90, "prompt": "Pick one particular event or moment from this memorable holiday and describe it in detail. How did that moment contribute to making the holiday special for you?"}, "prompt_type": "Recount", "followup_moves": ["深挖细节"], "part1_zh": "描述你度过的最难忘的一个假期。是什么让这个假期如此特别？它现在仍怎样影响你？", "part2_zh": "从这个难忘的假期里挑出一个具体的事件或瞬间，详细描述它。那个瞬间怎样让这个假期对你来说变得特别？", "part1_tasks": ["讲清楚是哪次假期（时间、地点、和谁）", "解释为什么特别", "说明它现在对你的影响"], "part1_outline": ["背景：什么时候、去了哪、和谁", "经过：两三件做过的事", "特别之处：一个最能说明问题的原因", "影响：到现在还在影响你的地方"], "part2_tasks": ["挑出一个具体的瞬间", "用细节描述（看到、听到、感受到什么）", "说明这个瞬间为什么让假期变得特别"], "part2_bridge": "追问是「深挖细节」：从第一问提到的事情里挑一件，放大来写。第一句可以写：One moment that stands out from that holiday is when ...。用过去时，加入感官细节，最后一句回扣「这就是这次假期特别的原因」。"}, {"number": 69, "difficulty": "medium", "categories": ["Personal Experiences & Development", "Values & Ethics"], "part1": {"instruction": "Write about the topic below for 5 minutes.", "prep_seconds": 30, "timer_seconds": 300, "min_words": 120, "prompt": "Who is a person you admire? Why do you look up to this person? Share a story about them that explains why you respect or admire them."}, "part2": {"instruction": "Write a follow-up response for 3 minutes.", "timer_seconds": 180, "min_words": 90, "prompt": "What qualities or behaviors would you like to adopt from this person in your own life? Explain how imitating these might benefit you."}, "prompt_type": "Recount", "followup_moves": ["分析影响"], "part1_zh": "你钦佩的人是谁？你为什么敬重这个人？讲一个关于他/她的故事，说明你为什么尊敬或钦佩他/她。", "part2_zh": "你希望在自己的生活中学习这个人的哪些品质或行为？说明模仿这些会给你带来什么好处。", "part1_tasks": ["说明这个人是谁", "说明钦佩的原因", "讲一个具体故事来证明"], "part1_outline": ["介绍这个人：身份、和你的关系", "钦佩的品质：一两个", "故事：背景 → 经过 → 结果（用过去时）", "这个故事怎样体现那个品质", "收束"], "part2_tasks": ["选出想学习的品质或行为（一两个）", "说明模仿它们给你带来的好处，最好有具体情境"], "part2_bridge": "追问从「他 / 她」转到「你自己」。第一句直接写：The quality I would most like to adopt from my ... is ...。品质最好和第一问的故事对应上，再写你打算怎样做、会有什么好处。"}, {"number": 71, "difficulty": "medium", "categories": ["Technology", "Travel & Culture"], "part1": {"instruction": "Write about the topic below for 5 minutes.", "prep_seconds": 30, "timer_seconds": 300, "min_words": 120, "prompt": "Smartphones have changed the way we communicate and interact with the world around us. Analyze both the advantages and disadvantages of this shift, offering your perspective on whether the changes are generally positive or negative."}, "part2": {"instruction": "Write a follow-up response for 3 minutes.", "timer_seconds": 180, "min_words": 90, "prompt": "How have smartphones affected the experience of travel? Do you see these effects as generally advantageous, disadvantageous, or a mix of both? Explain your thoughts."}, "prompt_type": "Argue", "followup_moves": ["转换视角"], "part1_zh": "智能手机改变了我们交流和与世界互动的方式。分析这一转变的利与弊，并谈谈你认为这些变化总体上是积极的还是消极的。", "part2_zh": "智能手机怎样影响了旅行体验？你认为这些影响总体上有利、不利，还是利弊兼有？说明你的想法。", "part1_tasks": ["分析优点（至少一个）", "分析缺点（至少一个）", "给出总体判断：积极还是消极"], "part1_outline": ["主题句：智能手机改变了交流方式", "优点：即时联系、获取信息 + 例子", "缺点：分心、面对面交流减少 + 例子", "总体判断 + 理由", "收束"], "part2_tasks": ["说明智能手机对旅行体验的具体影响（导航、翻译、拍照、分心等）", "给出判断：有利 / 不利 / 利弊兼有，并解释"], "part2_bridge": "追问把话题从「交流」转到「旅行」这个具体场景。第一句直接写：Smartphones have changed travel in several ways. 可以接回第一问的判断：如果第一问说总体积极，这里可以说旅行中也大体如此，但有一个明显的缺点。"}, {"number": 88, "difficulty": "medium", "categories": ["Education", "Personal Experiences & Development"], "part1": {"instruction": "Write about the topic below for 5 minutes.", "prep_seconds": 30, "timer_seconds": 300, "min_words": 120, "prompt": "Discuss the concept of self-reliance. In what ways do you believe being self-reliant is important, and how might it be beneficial or detrimental in certain situations? Consider personal, community, and global perspectives in your response."}, "part2": {"instruction": "Write a follow-up response for 3 minutes.", "timer_seconds": 180, "min_words": 90, "prompt": "How does the education system in your country encourage or discourage the development of self-reliance? Discuss your thoughts and any personal experiences related to this."}, "prompt_type": "Describe", "followup_moves": ["转换视角", "深挖细节"], "part1_zh": "谈谈「自立」这个概念。你认为自立在哪些方面重要？它在某些情况下怎样有益或有害？请从个人、社区和全球的角度来考虑。", "part2_zh": "你们国家的教育体系怎样鼓励或阻碍自立能力的培养？谈谈你的想法和相关的个人经历。", "part1_tasks": ["解释什么是自立", "说明它的重要性", "说明它有益和有害的情况", "覆盖个人、社区、全球三个角度"], "part1_outline": ["主题句：定义自立", "个人层面：重要性 + 例子", "社区 / 全球层面：自立的价值", "有害的情况：过度自立、不愿求助、不合作", "收束：自立需要和合作平衡"], "part2_tasks": ["说明本国教育体系鼓励自立的地方", "说明阻碍自立的地方", "加入自己的经历"], "part2_bridge": "追问换到「教育体系」这个场景，而且要求个人经历。第一句直接写：In my view, the education system in my country both encourages and discourages self-reliance. 可以接回第一问「过度自立的坏处」或「需要平衡」，再用自己在学校的经历举例。"}, {"number": 94, "difficulty": "medium", "categories": ["The Economy, Government & Society", "Travel & Culture"], "part1": {"instruction": "Write about the topic below for 5 minutes.", "prep_seconds": 30, "timer_seconds": 300, "min_words": 120, "prompt": "Multicultural societies, in which there is a mixture of different ethnic peoples, bring more benefits than drawbacks to a country. Discuss this statement with your own experience or knowledge."}, "part2": {"instruction": "Write a follow-up response for 3 minutes.", "timer_seconds": 180, "min_words": 90, "prompt": "What are some challenges a country might face when becoming a multicultural society and how can these be addressed?"}, "prompt_type": "Argue", "followup_moves": ["提出方案"], "part1_zh": "多元文化社会（由不同民族的人混合组成的社会）给一个国家带来的好处多于坏处。结合你自己的经历或知识讨论这一观点。", "part2_zh": "一个国家在成为多元文化社会的过程中可能面临哪些挑战？这些挑战可以怎样应对？", "part1_tasks": ["对这个观点表态（同意 / 不同意 / 部分同意）", "用经历或知识来讨论好处和坏处"], "part1_outline": ["立场句：是否同意好处多于坏处", "好处 1：经济、创新 + 例子", "好处 2：文化交流、饮食、节日 + 例子", "坏处：误解、冲突，并说明为什么不足以抵消好处", "收束"], "part2_tasks": ["列出至少两个挑战", "每个挑战给出应对办法"], "part2_bridge": "追问是「分析挑战 + 提出方案」。第一句写：A country may face several challenges when it becomes multicultural. 第一问提到的坏处可以在这里展开成具体挑战，但一定要给出对应的解决办法，比如语言课程、社区活动。"}, {"number": 109, "difficulty": "hard", "categories": ["The Economy, Government & Society", "Technology"], "part1": {"instruction": "Write about the topic below for 5 minutes.", "prep_seconds": 30, "timer_seconds": 300, "min_words": 120, "prompt": "The internet has democratized access to information but has also led to some people believing false information or 'fake news'. What role do you think individuals, governments, and internet companies should play to combat misinformation? Provide specific examples and support for your opinion."}, "part2": {"instruction": "Write a follow-up response for 3 minutes.", "timer_seconds": 180, "min_words": 90, "prompt": "Discuss in detail one specific strategy that could be used to combat \"fake news\" and misinformation online. Who would interact with this strategy, and what effects might it have?"}, "prompt_type": "Argue", "followup_moves": ["聚焦一点", "分析影响"], "part1_zh": "互联网让获取信息变得普及，但也导致一些人相信虚假信息或「假新闻」。你认为个人、政府和互联网公司应该在打击虚假信息中扮演什么角色？给出具体例子来支持你的观点。", "part2_zh": "详细讨论一种可以用来打击网络「假新闻」和虚假信息的具体策略。谁会参与这项策略？它可能产生什么效果？", "part1_tasks": ["分别说明个人、政府、互联网公司的角色（三个主体都要写）", "每个角色配具体例子"], "part1_outline": ["立场句：三方都要承担责任", "个人：核实来源、不随意转发 + 例子", "政府：立法、媒介素养教育 + 例子", "互联网公司：事实核查标签、算法调整 + 例子", "收束：三方合作"], "part2_tasks": ["选定一种策略，详细描述", "说明谁会参与或接触这项策略", "说明它可能产生的效果（可以包括局限）"], "part2_bridge": "追问从「三方角色」聚焦到「一个策略」。第一句直接写出策略名称：One effective strategy is ...。最好从第一问提到的做法里挑一个（如事实核查标签）深入展开，写清参与者和效果。"}, {"number": 119, "difficulty": "medium", "categories": ["Education", "Values & Ethics"], "part1": {"instruction": "Write about the topic below for 5 minutes.", "prep_seconds": 30, "timer_seconds": 300, "min_words": 120, "prompt": "Do you think that community service should be a mandatory part of school curriculum? Why or why not? Provide reasons and examples to support your answer."}, "part2": {"instruction": "Write a follow-up response for 3 minutes.", "timer_seconds": 180, "min_words": 90, "prompt": "How might mandatory community service in schools influence students' perspectives towards social responsibility? Discuss both possible positive and negative outcomes."}, "prompt_type": "Argue", "followup_moves": ["分析影响"], "part1_zh": "你认为社区服务应该成为学校课程的必修部分吗？为什么？给出理由和例子来支持你的回答。", "part2_zh": "学校里的强制社区服务可能怎样影响学生对社会责任的看法？讨论可能的积极和消极结果。", "part1_tasks": ["明确立场：支持 / 反对 / 有条件支持", "至少两个理由", "每个理由配一个具体例子"], "part1_outline": ["立场句", "理由 1：理解社会问题 + 例子（如食物银行）", "理由 2：培养实际能力 + 例子（如组织清扫公园）", "让步：强制可能流于形式，并回应", "收束"], "part2_tasks": ["说明学生对社会责任的看法会怎样变化", "至少一个积极结果", "至少一个消极结果"], "part2_bridge": "追问是「分析影响」，而且要求正反两面，没有要求解决方案。第一句直接回答影响；可以用 Building on my earlier point about ... 接回第一问。即使第一问强烈支持，也必须写消极结果。"}, {"number": 120, "difficulty": "easy", "categories": ["The Environment", "Personal Experiences & Development"], "part1": {"instruction": "Write about the topic below for 5 minutes.", "prep_seconds": 30, "timer_seconds": 300, "min_words": 120, "prompt": "Describe your favorite season. What makes it special for you? What activities do you usually do during this season?"}, "part2": {"instruction": "Write a follow-up response for 3 minutes.", "timer_seconds": 180, "min_words": 90, "prompt": "Discuss a memorable event or day you have experienced during your favorite season. How did this event or day influence your feelings about the season?"}, "prompt_type": "Describe", "followup_moves": ["深挖细节"], "part1_zh": "描述你最喜欢的季节。它对你来说有什么特别之处？在这个季节你通常做哪些活动？", "part2_zh": "讲讲你在最喜欢的季节里经历过的一件难忘的事或一天。这件事或这一天怎样影响了你对这个季节的感受？", "part1_tasks": ["说明是哪个季节", "说明它特别的原因", "说明通常做的活动"], "part1_outline": ["主题句：我最喜欢的季节是……", "特别之处：天气、景色、节日（一两点，加细节）", "活动 1 + 细节", "活动 2 + 细节", "收束：为什么每年都期待它"], "part2_tasks": ["讲一件具体的事或一天（用过去时）", "说明它怎样影响你对这个季节的感受"], "part2_bridge": "追问是「深挖细节」，从一般描述转到一次具体经历。第一句写：One memorable day during autumn was ...。最好选第一问提到的某个活动，把它写成一个具体的故事，最后回扣「这就是我更喜欢这个季节的原因」。"}, {"number": 738, "difficulty": "medium", "categories": ["The Economy, Government & Society", "The Environment"], "part1": {"instruction": "Write about the topic below for 5 minutes.", "prep_seconds": 30, "timer_seconds": 300, "min_words": 120, "prompt": "Describe a specific action you believe individuals can take to help protect the environment. Explain why this action is important and how it can make a difference."}, "part2": {"instruction": "Write a follow-up response for 3 minutes.", "timer_seconds": 180, "min_words": 90, "prompt": "How can the government and communities support individuals in taking the action you described? Discuss the potential impact of such support."}, "prompt_type": "Describe", "followup_moves": ["转换视角", "分析影响"], "part1_zh": "描述一个你认为个人可以采取的具体环保行动。解释这个行动为什么重要，以及它能怎样带来改变。", "part2_zh": "政府和社区可以怎样支持个人采取你所描述的行动？讨论这种支持可能产生的影响。", "part1_tasks": ["说明一个具体行动（只写一个，写透）", "解释为什么重要", "说明它怎样带来改变"], "part1_outline": ["主题句：点出行动（如减少一次性塑料、垃圾分类）", "具体做法：日常怎么做", "重要性：解决什么环境问题", "改变：个人行动累积起来的效果 + 例子", "收束"], "part2_tasks": ["说明政府可以怎样支持", "说明社区可以怎样支持", "讨论这些支持带来的影响"], "part2_bridge": "追问把主体从「个人」转到「政府和社区」。第一句写：Governments and communities can support this action in several ways. 行动必须是第一问写的那一个，不要换。政府、社区各写一条具体措施，最后写影响。"}, {"number": 820, "difficulty": "hard", "categories": ["Personal Experiences & Development", "Values & Ethics"], "part1": {"instruction": "Write about the topic below for 5 minutes.", "prep_seconds": 30, "timer_seconds": 300, "min_words": 120, "prompt": "Discuss the role of money in achieving happiness. Can money truly buy happiness, or is it merely a means to an end? Consider various perspectives and experiences to support your argument."}, "part2": {"instruction": "Write a follow-up response for 3 minutes.", "timer_seconds": 180, "min_words": 90, "prompt": "How do personal relationships and experiences contribute to happiness compared to financial wealth? Explain your viewpoint."}, "prompt_type": "Argue", "followup_moves": ["比较评价"], "part1_zh": "谈谈金钱在获得幸福中的作用。金钱真的能买到幸福吗？还是它只是一种手段？从不同的角度和经历来支持你的论点。", "part2_zh": "与财富相比，人际关系和个人经历怎样为幸福做出贡献？说明你的观点。", "part1_tasks": ["说明金钱在幸福中的作用", "回答金钱能否买到幸福", "从多个角度（基本需求、长期满足感等）论证"], "part1_outline": ["立场句：金钱是手段，不是幸福本身（或其他立场）", "角度 1：满足基本需求时，金钱确实提升幸福 + 例子", "角度 2：超过一定程度后作用变小 + 例子", "让步与限定", "收束"], "part2_tasks": ["说明人际关系怎样带来幸福", "说明经历怎样带来幸福", "和财富做比较"], "part2_bridge": "追问是「比较评价」。第一句直接给出比较结论：In my view, relationships and experiences contribute more to lasting happiness than wealth does. 接回第一问「金钱只是手段」的观点，再用例子说明关系和经历带来的幸福更持久。"}, {"number": 875, "difficulty": "medium", "categories": ["The Environment", "Travel & Culture"], "part1": {"instruction": "Write about the topic below for 5 minutes.", "prep_seconds": 30, "timer_seconds": 300, "min_words": 120, "prompt": "Discuss the impact of tourism on local cultures and environments. Explain both the positive and negative effects, and suggest ways to promote sustainable travel that benefits both tourists and the local communities."}, "part2": {"instruction": "Write a follow-up response for 3 minutes.", "timer_seconds": 180, "min_words": 90, "prompt": "How can local communities take an active role in promoting and implementing sustainable tourism practices? Provide examples or suggestions."}, "prompt_type": "Describe", "followup_moves": ["转换视角", "提出方案"], "part1_zh": "讨论旅游业对当地文化和环境的影响。说明积极和消极两方面的影响，并提出促进可持续旅游的办法，使游客和当地社区都受益。", "part2_zh": "当地社区可以怎样主动推动和实施可持续旅游的做法？给出例子或建议。", "part1_tasks": ["说明积极影响", "说明消极影响", "提出促进可持续旅游的办法"], "part1_outline": ["主题句：旅游业是一把双刃剑", "积极影响：经济收入、文化传播 + 例子", "消极影响：环境破坏、文化商业化 + 例子", "可持续办法：一两条", "收束"], "part2_tasks": ["说明当地社区可以采取的具体做法", "给出例子或建议"], "part2_bridge": "追问把主体从「笼统的各方」转到「当地社区」。第一句写：Local communities can play an active role in several ways. 第一问的办法如果偏向政府或游客，这里要换成社区自己能做的事，比如社区导游、限制人流、手工艺合作社。"}, {"number": 909, "difficulty": "hard", "categories": ["The Economy, Government & Society", "The Environment"], "part1": {"instruction": "Write about the topic below for 5 minutes.", "prep_seconds": 30, "timer_seconds": 300, "min_words": 120, "prompt": "Discuss the impact of single-use plastics on the environment. What steps can individuals and governments take to reduce this impact?"}, "part2": {"instruction": "Write a follow-up response for 3 minutes.", "timer_seconds": 180, "min_words": 90, "prompt": "How can communities effectively encourage the reduction of single-use plastics among their members?"}, "prompt_type": "Describe", "followup_moves": ["转换视角", "提出方案"], "part1_zh": "讨论一次性塑料对环境的影响。个人和政府可以采取哪些措施来减少这种影响？", "part2_zh": "社区可以怎样有效地鼓励成员减少使用一次性塑料？", "part1_tasks": ["说明一次性塑料对环境的影响", "说明个人可以采取的措施", "说明政府可以采取的措施"], "part1_outline": ["主题句：一次性塑料带来严重的环境问题", "影响：海洋污染、难以降解 + 例子", "个人措施：自带购物袋、水杯", "政府措施：禁令、收费、回收体系", "收束"], "part2_tasks": ["给出社区层面的具体鼓励办法（至少两个）", "说明为什么有效"], "part2_bridge": "追问从「个人和政府」转到「社区」。第一句直接写：Communities can encourage their members to use less single-use plastic in two main ways. 不要重复第一问的个人或政府措施，写社区特有的做法，比如交换活动、商户合作、邻里挑战赛。"}, {"number": 928, "difficulty": "medium", "categories": ["The Economy, Government & Society", "Travel & Culture"], "part1": {"instruction": "Write about the topic below for 5 minutes.", "prep_seconds": 30, "timer_seconds": 300, "min_words": 120, "prompt": "Many communities organize local events such as festivals, fairs, or parades to bring people together. How do such events benefit society? Provide specific examples to support your answer."}, "part2": {"instruction": "Write a follow-up response for 3 minutes.", "timer_seconds": 180, "min_words": 90, "prompt": "How can local events help foster a sense of community and belonging among residents? Give examples to illustrate your points."}, "prompt_type": "Describe", "followup_moves": ["聚焦一点"], "part1_zh": "许多社区会组织节日、集市或游行等本地活动，把人们聚在一起。这类活动怎样有益于社会？给出具体例子来支持你的回答。", "part2_zh": "本地活动怎样帮助居民培养社区意识和归属感？举例说明你的观点。", "part1_tasks": ["说明本地活动对社会的好处（至少两个）", "给出具体例子"], "part1_outline": ["主题句：本地活动对社会有多方面的好处", "好处 1：促进交流 + 例子", "好处 2：支持本地经济 + 例子", "好处 3（可选）：传承文化", "收束"], "part2_tasks": ["说明本地活动怎样培养社区意识和归属感", "举例"], "part2_bridge": "追问是「聚焦一点」：从多种好处里只挑「归属感」深入写。第一句写：Local events help residents feel that they belong to the community by ...。可以接回第一问的「促进交流」，写得更深：从认识邻居到愿意互相帮助。"}, {"number": 960, "difficulty": "medium", "categories": ["The Economy, Government & Society", "Travel & Culture"], "part1": {"instruction": "Write about the topic below for 5 minutes.", "prep_seconds": 30, "timer_seconds": 300, "min_words": 120, "prompt": "Discuss how traditional cuisine can impact national identity and cultural heritage. Provide examples to support your arguments, and consider both the positive and negative aspects of this relationship."}, "part2": {"instruction": "Write a follow-up response for 3 minutes.", "timer_seconds": 180, "min_words": 90, "prompt": "How can the globalization of food impact traditional cuisine and national identity? Discuss whether you think this impact is mostly positive or negative, and why."}, "prompt_type": "Describe", "followup_moves": ["转换视角", "比较评价"], "part1_zh": "讨论传统饮食怎样影响民族认同和文化遗产。举例支持你的论点，并考虑这种关系的积极和消极两方面。", "part2_zh": "饮食全球化会怎样影响传统饮食和民族认同？讨论你认为这种影响主要是积极的还是消极的，以及为什么。", "part1_tasks": ["说明传统饮食怎样影响民族认同和文化遗产", "举例", "考虑积极和消极两方面"], "part1_outline": ["主题句：传统饮食是文化认同的一部分", "积极：节日食物传承家庭和民族记忆 + 例子（如饺子、月饼）", "积极：向世界展示文化", "消极：刻板印象，或排斥变化", "收束"], "part2_tasks": ["说明饮食全球化对传统饮食的影响", "说明对民族认同的影响", "判断主要是积极还是消极，并给出理由"], "part2_bridge": "追问换了角度：从「传统饮食本身」转到「全球化的冲击」，还要求判断。第一句直接写判断：I believe the globalization of food has a mostly positive impact, although ...。可以接回第一问的例子，说明它在全球化下怎样变化。"}, {"number": 964, "difficulty": "medium", "categories": ["Education", "Technology"], "part1": {"instruction": "Write about the topic below for 5 minutes.", "prep_seconds": 30, "timer_seconds": 300, "min_words": 120, "prompt": "Discuss the advantages and disadvantages of online learning compared to traditional in-class education. Which method do you think is more effective and why?"}, "part2": {"instruction": "Write a follow-up response for 3 minutes.", "timer_seconds": 180, "min_words": 90, "prompt": "How does the social interaction aspect differ between online learning and traditional in-class education? Explain how this difference might affect students' learning experiences."}, "prompt_type": "Argue", "followup_moves": ["聚焦一点", "分析影响"], "part1_zh": "讨论在线学习与传统课堂教育相比的优缺点。你认为哪种方式更有效？为什么？", "part2_zh": "在线学习和传统课堂教育在社交互动方面有什么不同？说明这种不同会怎样影响学生的学习体验。", "part1_tasks": ["说明在线学习的优点和缺点", "和传统课堂比较", "判断哪种更有效，并说明原因"], "part1_outline": ["立场句：哪种更有效（可以是有条件的）", "在线学习优点：灵活、资源多 + 例子", "在线学习缺点：自律要求高、互动少 + 例子", "比较后给出判断和原因", "收束"], "part2_tasks": ["说明两种方式在社交互动上的不同", "说明这种不同对学习体验的影响"], "part2_bridge": "追问从「整体比较」聚焦到「社交互动」这一点。第一句直接写不同之处：The biggest difference lies in how students interact with teachers and classmates. 可以接回第一问提到的「互动少」，再写具体影响，比如提问、讨论、学习动力。"}, {"number": 1007, "difficulty": "medium", "categories": ["The Economy, Government & Society", "Values & Ethics"], "part1": {"instruction": "Write about the topic below for 5 minutes.", "prep_seconds": 30, "timer_seconds": 300, "min_words": 120, "prompt": "Describe one way in which you think society has improved over the last few years. Why do you think this change is important?"}, "part2": {"instruction": "Write a follow-up response for 3 minutes.", "timer_seconds": 180, "min_words": 90, "prompt": "How do you think this improvement will affect future generations? Explain your reasoning."}, "prompt_type": "Describe", "followup_moves": ["分析影响"], "part1_zh": "描述一个你认为近几年社会变好的方面。你为什么认为这个变化很重要？", "part2_zh": "你认为这个进步会怎样影响后代？说明你的理由。", "part1_tasks": ["说明一个具体的进步（只写一个，写透）", "解释为什么重要"], "part1_outline": ["主题句：点出这个进步（如移动支付、环保意识、在线医疗）", "具体表现：以前怎样，现在怎样", "重要性 1 + 例子", "重要性 2 + 例子", "收束"], "part2_tasks": ["说明这个进步对后代的影响", "给出理由"], "part2_bridge": "追问是「分析影响」，时间线从现在推到未来。第一句写：This improvement will affect future generations in several ways. 进步必须是第一问写的那一个，然后写对下一代的具体影响。"}, {"number": 1037, "difficulty": "medium", "categories": ["Personal Experiences & Development", "Values & Ethics"], "part1": {"instruction": "Write about the topic below for 5 minutes.", "prep_seconds": 30, "timer_seconds": 300, "min_words": 120, "prompt": "Describe a time when you saved money to buy something special. What did you save for, and how did you manage to save the money? How did you feel when you finally bought it?"}, "part2": {"instruction": "Write a follow-up response for 3 minutes.", "timer_seconds": 180, "min_words": 90, "prompt": "How do you think saving money for something special can teach important life skills or lessons? Explain your thoughts."}, "prompt_type": "Recount", "followup_moves": ["分析影响"], "part1_zh": "描述一次你为买一件特别的东西而存钱的经历。你为什么存钱？你是怎样存下这笔钱的？最终买到时你有什么感受？", "part2_zh": "你认为为某件特别的东西存钱，能怎样教会人重要的生活技能或道理？说明你的想法。", "part1_tasks": ["说明为什么存钱（买什么）", "说明怎样存下来", "说明买到时的感受"], "part1_outline": ["背景：想买什么、为什么想要、当时几岁", "存钱过程：两三个具体做法（如少买零食、做兼职）", "困难：想放弃的时刻", "买到的那一刻：感受", "收束：这段经历的意义"], "part2_tasks": ["说明存钱能教会哪些技能或道理（至少两个）", "解释为什么"], "part2_bridge": "追问是「提炼道理」：从一次经历上升到一般的生活技能。第一句写：Saving money for something special can teach several important life skills. 用第一问的经历当例子，比如「我当时少买零食」说明自律和延迟满足。"}, {"number": 1043, "difficulty": "medium", "categories": ["Personal Experiences & Development", "Relationships"], "part1": {"instruction": "Write about the topic below for 5 minutes.", "prep_seconds": 30, "timer_seconds": 300, "min_words": 120, "prompt": "Describe a memorable experience you had with a friend or family member. What made this experience special, and what did you learn from it?"}, "part2": {"instruction": "Write a follow-up response for 3 minutes.", "timer_seconds": 180, "min_words": 90, "prompt": "How did this memorable experience strengthen your relationship with that friend or family member?"}, "prompt_type": "Recount", "followup_moves": ["分析影响"], "part1_zh": "描述一次你和朋友或家人之间的难忘经历。是什么让这次经历特别？你从中学到了什么？", "part2_zh": "这次难忘的经历怎样加深了你和那位朋友或家人之间的关系？", "part1_tasks": ["讲清楚这次经历（和谁、发生了什么）", "说明为什么特别", "说明学到了什么"], "part1_outline": ["背景：和谁、什么时候、在哪", "经过：两三个关键动作", "特别之处：一个关键瞬间", "学到的东西", "收束"], "part2_tasks": ["说明这次经历怎样加深了关系", "最好有具体变化作证据（之后怎样相处）"], "part2_bridge": "追问是「分析影响」，对象是你们之间的关系。第一句写：This experience brought my ... and me much closer. 然后写经历之前和之后的对比，比如更信任对方、更愿意倾诉。"}, {"number": 1143, "difficulty": "medium", "categories": ["Arts, Literature & Music", "Personal Experiences & Development"], "part1": {"instruction": "Write about the topic below for 5 minutes.", "prep_seconds": 30, "timer_seconds": 300, "min_words": 120, "prompt": "Describe your favorite piece of art, whether it is a painting, song, movie, or book. Why does it stand out to you and how does it make you feel?"}, "part2": {"instruction": "Write a follow-up response for 3 minutes.", "timer_seconds": 180, "min_words": 90, "prompt": "How has your favorite piece of art influenced your thoughts, behavior, or life choices? Explain with specific examples."}, "prompt_type": "Describe", "followup_moves": ["分析影响"], "part1_zh": "描述你最喜欢的一件艺术作品，可以是画、歌、电影或书。它为什么让你印象深刻？它给你什么感受？", "part2_zh": "你最喜欢的艺术作品怎样影响了你的想法、行为或人生选择？用具体例子说明。", "part1_tasks": ["说明是哪件作品", "说明为什么印象深刻", "说明带给你的感受"], "part1_outline": ["主题句：作品名称和类型", "简单介绍内容（两三句，不要复述全部情节）", "印象深刻的原因：一两点 + 具体场景", "感受", "收束"], "part2_tasks": ["说明作品对想法、行为或人生选择的影响", "用具体例子"], "part2_bridge": "追问是「分析影响」，从「感受」推进到「实际改变」。第一句写：This book has influenced the way I ...。要写出具体的改变，比如开始做某件事、做了某个选择，不要只重复「它很感人」。"}, {"number": 1146, "difficulty": "medium", "categories": ["Personal Experiences & Development", "Values & Ethics"], "part1": {"instruction": "Write about the topic below for 5 minutes.", "prep_seconds": 30, "timer_seconds": 300, "min_words": 120, "prompt": "What is one value or belief that is very important to you? Why is it important? How does it influence your daily life?"}, "part2": {"instruction": "Write a follow-up response for 3 minutes.", "timer_seconds": 180, "min_words": 90, "prompt": "Can you describe a situation where this value or belief helped you make an important decision? Explain how it guided your choice."}, "prompt_type": "Describe", "followup_moves": ["深挖细节"], "part1_zh": "对你来说非常重要的一个价值观或信念是什么？它为什么重要？它怎样影响你的日常生活？", "part2_zh": "你能描述一个这个价值观或信念帮助你做出重要决定的情况吗？说明它是怎样指导你的选择的。", "part1_tasks": ["说明是哪个价值观（如诚实、坚持、尊重）", "说明为什么重要", "说明它怎样影响日常生活"], "part1_outline": ["主题句：点出价值观", "为什么重要：来源（家庭、经历）+ 理由", "日常影响 1 + 例子", "日常影响 2 + 例子", "收束"], "part2_tasks": ["描述一个具体情境（用过去时）", "说明这个价值观怎样指导了你的选择"], "part2_bridge": "追问是「深挖细节」：要一个具体的决定场景。第一句写：One situation where honesty guided an important decision was when ...。用 Recount 的写法：背景 → 两难 → 价值观起作用 → 决定和结果。"}, {"number": 1154, "difficulty": "medium", "categories": ["Arts, Literature & Music", "Education"], "part1": {"instruction": "Write about the topic below for 5 minutes.", "prep_seconds": 30, "timer_seconds": 300, "min_words": 120, "prompt": "Discuss whether you believe art should be a compulsory subject in school curricula. What impact do you think studying art has on students' development? Provide reasons and examples to support your opinion."}, "part2": {"instruction": "Write a follow-up response for 3 minutes.", "timer_seconds": 180, "min_words": 90, "prompt": "How might studying art influence a student's creativity and critical thinking skills?"}, "prompt_type": "Argue", "followup_moves": ["聚焦一点"], "part1_zh": "谈谈你是否认为艺术应该成为学校课程的必修课。你认为学习艺术对学生的发展有什么影响？给出理由和例子支持你的观点。", "part2_zh": "学习艺术可能怎样影响学生的创造力和批判性思维能力？", "part1_tasks": ["明确立场：应该 / 不应该成为必修", "说明学习艺术对学生发展的影响", "给出理由和例子"], "part1_outline": ["立场句", "影响 1：表达与情绪 + 例子", "影响 2：创造力、合作 + 例子", "让步：学业压力、兴趣差异，并回应", "收束"], "part2_tasks": ["说明学习艺术对创造力的影响", "说明学习艺术对批判性思维的影响"], "part2_bridge": "追问是「聚焦一点」：只谈创造力和批判性思维两项。第一句写：Studying art can strengthen both creativity and critical thinking. 两项分开写，各配一个例子，比如分析一幅画的构图就是在练批判性思维。"}, {"number": 1194, "difficulty": "medium", "categories": ["Health & Well-Being", "Personal Experiences & Development"], "part1": {"instruction": "Write about the topic below for 5 minutes.", "prep_seconds": 30, "timer_seconds": 300, "min_words": 120, "prompt": "Discuss the impact of having a hobby on an individual's life. How can engaging in hobbies contribute to personal development and well-being? Provide specific examples to support your argument."}, "part2": {"instruction": "Write a follow-up response for 3 minutes.", "timer_seconds": 180, "min_words": 90, "prompt": "How can having a hobby influence an individual's stress levels and overall mental health? Explain with examples."}, "prompt_type": "Describe", "followup_moves": ["聚焦一点"], "part1_zh": "谈谈拥有爱好对一个人生活的影响。从事爱好怎样促进个人成长和身心健康？给出具体例子支持你的论点。", "part2_zh": "拥有爱好会怎样影响一个人的压力水平和整体心理健康？举例说明。", "part1_tasks": ["说明爱好对生活的影响", "说明对个人成长的促进", "说明对身心健康的促进", "给出具体例子"], "part1_outline": ["主题句：爱好对人有积极影响", "个人成长：新技能、自信 + 例子", "身心健康：运动类爱好、放松 + 例子", "补充：社交圈", "收束"], "part2_tasks": ["说明爱好对压力水平的影响", "说明对整体心理健康的影响", "举例"], "part2_bridge": "追问是「聚焦一点」：从整体影响缩到「压力和心理健康」。第一句写：Having a hobby can significantly reduce stress and improve mental health. 第一问的「身心健康」可以在这里展开，换一个新例子，比如考试周弹吉他半小时的效果。"}, {"number": 1198, "difficulty": "medium", "categories": ["The Economy, Government & Society", "Values & Ethics"], "part1": {"instruction": "Write about the topic below for 5 minutes.", "prep_seconds": 30, "timer_seconds": 300, "min_words": 120, "prompt": "If you had the opportunity to give a large sum of money to one cause or organization, where would you donate it and why? Describe the cause or organization and explain your reasons for choosing it."}, "part2": {"instruction": "Write a follow-up response for 3 minutes.", "timer_seconds": 180, "min_words": 90, "prompt": "How do you think your donation could make a significant impact on the cause or organization you chose? Provide specific examples or scenarios."}, "prompt_type": "Argue", "followup_moves": ["分析影响"], "part1_zh": "如果你有机会把一大笔钱捐给一个事业或组织，你会捐给哪里？为什么？描述这个事业或组织，并解释你选择它的理由。", "part2_zh": "你认为你的捐款可以怎样给你选择的事业或组织带来显著的影响？给出具体例子或设想的情景。", "part1_tasks": ["说明捐给哪里", "描述这个事业或组织", "解释选择的理由"], "part1_outline": ["立场句：我会捐给……", "介绍：它做什么", "理由 1 + 例子", "理由 2 + 例子", "收束"], "part2_tasks": ["说明捐款会怎样带来影响", "给出具体例子或设想的场景"], "part2_bridge": "追问是「分析影响」。第一句写：My donation could make a real difference by ...。要写具体用途和结果，比如资助多少个孩子上学、建一所图书馆，并接回第一问选择它的理由。"}, {"number": 1210, "difficulty": "hard", "categories": ["Arts, Literature & Music", "The Economy, Government & Society"], "part1": {"instruction": "Write about the topic below for 5 minutes.", "prep_seconds": 30, "timer_seconds": 300, "min_words": 120, "prompt": "Consider the impact of public art, such as sculptures, murals, and installations, in urban environments. How do such works of art transform the spaces they inhabit, influence the community, and reflect cultural identity? Provide examples and discuss both positive and potential negative effects."}, "part2": {"instruction": "Write a follow-up response for 3 minutes.", "timer_seconds": 180, "min_words": 90, "prompt": "How might public art contribute to or help address social issues within a community? Provide specific examples to illustrate your points."}, "prompt_type": "Describe", "followup_moves": ["转换视角"], "part1_zh": "思考雕塑、壁画、装置艺术等公共艺术在城市环境中的影响。这些作品怎样改变它们所在的空间、影响社区、反映文化认同？举例并讨论积极和可能的消极影响。", "part2_zh": "公共艺术可能怎样帮助社区关注或应对社会问题？举具体例子说明你的观点。", "part1_tasks": ["说明公共艺术怎样改变空间", "说明它怎样影响社区", "说明它怎样反映文化认同", "举例，并写积极和消极两面"], "part1_outline": ["主题句：公共艺术会深刻影响城市", "改变空间：让破旧地方变得有吸引力 + 例子", "影响社区与文化认同：地方故事、骄傲感 + 例子", "消极影响：费用、争议、与当地不协调", "收束"], "part2_tasks": ["说明公共艺术怎样让社区关注社会问题", "说明它怎样帮助应对社会问题", "举具体例子"], "part2_bridge": "追问换了角度：从「空间和认同」转到「社会问题」。第一句写：Public art can draw attention to social issues and even help address them. 例子可以是关于环保的装置、由社区居民共同完成的壁画等。"}, {"number": 1224, "difficulty": "medium", "categories": ["Relationships", "Values & Ethics"], "part1": {"instruction": "Write about the topic below for 5 minutes.", "prep_seconds": 30, "timer_seconds": 300, "min_words": 120, "prompt": "Should professional athletes be considered role models for the youth? Discuss the potential benefits and drawbacks, providing reasons and examples to support your viewpoint."}, "part2": {"instruction": "Write a follow-up response for 3 minutes.", "timer_seconds": 180, "min_words": 90, "prompt": "How do the behaviors and actions of professional athletes influence the attitudes and actions of the youth? Provide examples to illustrate your points."}, "prompt_type": "Argue", "followup_moves": ["分析影响"], "part1_zh": "职业运动员应该被视为青少年的榜样吗？讨论可能的好处和坏处，并给出理由和例子支持你的观点。", "part2_zh": "职业运动员的行为和举动怎样影响青少年的态度和行为？举例说明你的观点。", "part1_tasks": ["明确立场", "讨论好处", "讨论坏处", "给出理由和例子"], "part1_outline": ["立场句：可以是榜样，但要有选择", "好处：坚持、自律、团队精神 + 例子", "坏处：丑闻、过度追求名利 + 例子", "条件：看行为不看名气", "收束"], "part2_tasks": ["说明运动员的行为怎样影响青少年的态度", "说明怎样影响青少年的行为", "举例（正面、负面都可以）"], "part2_bridge": "追问是「分析影响」，而且要讲清楚影响是怎么发生的。第一句写：Professional athletes influence young people's attitudes and actions in both positive and negative ways. 接回第一问的好处和坏处，各举一个新的具体例子。"}, {"number": 1675, "difficulty": "medium", "categories": ["Relationships", "Technology"], "part1": {"instruction": "Write about the topic below for 5 minutes.", "prep_seconds": 30, "timer_seconds": 300, "min_words": 120, "prompt": "Are online friendships as valuable as in-person friendships? Why or why not? Support your opinion."}, "part2": {"instruction": "Write a follow-up response for 3 minutes.", "timer_seconds": 180, "min_words": 90, "prompt": "What are some challenges people might face when building trust in online friendships compared to in-person friendships?"}, "prompt_type": "Argue", "followup_moves": ["聚焦一点", "比较评价"], "part1_zh": "网络友谊和面对面的友谊一样有价值吗？为什么？支持你的观点。", "part2_zh": "与面对面的友谊相比，人们在网络友谊中建立信任时可能面临哪些挑战？", "part1_tasks": ["明确立场：一样有价值 / 不一样 / 看情况", "给出理由支持"], "part1_outline": ["立场句", "理由 1 + 例子（如共同兴趣、跨越距离的支持）", "理由 2 + 例子（如缺少面对面接触）", "让步与回应", "收束"], "part2_tasks": ["列出网络友谊中建立信任的挑战（至少两个）", "每个挑战和面对面友谊做对比"], "part2_bridge": "追问是「聚焦一点 + 比较」：只谈「信任」。第一句写：Building trust online can be harder than in person for several reasons. 每个挑战都要和面对面友谊对比，比如无法确认身份、看不到表情和语气。"}];
+const TYPE_ZH = {Argue:'论证观点', Describe:'说明描述', Recount:'讲述经历'};
+
+/* ---------- storage helpers ---------- */
+function lsGet(key, fallback){
+  try{ const v = localStorage.getItem(key); return v===null ? fallback : JSON.parse(v); }
+  catch(e){ return fallback; }
+}
+function lsSet(key, val){
+  try{ localStorage.setItem(key, JSON.stringify(val)); }catch(e){}
+}
+function lsDel(key){ try{ localStorage.removeItem(key); }catch(e){} }
+
+/* ---------- state ---------- */
+let filters = lsGet('iw_filters', {difficulty:'all', category:'all', type:'all', status:'all', favOnly:false, q:''});
+let progress = lsGet('iw_progress', {});
+function saveProgress(){ lsSet('iw_progress', progress); }
+function getProg(n){ return progress[n] || {done:false, favorite:false}; }
+
+let current = null; // {number, mode, name, stage, part1Text, part1Start, part2Text, part2Start, p1Elapsed, p2Elapsed, timerHandle}
+
+/* ---------- utils ---------- */
+function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function countWords(t){
+  const m = (t||'').match(/[A-Za-z0-9]+(?:['’-][A-Za-z0-9]+)*/g);
+  return m ? m.length : 0;
+}
+function fmtTime(sec){
+  sec = Math.max(0, Math.round(sec));
+  const m = Math.floor(sec/60), s = sec%60;
+  return m + ':' + String(s).padStart(2,'0');
+}
+function todayStr(){
+  const d = new Date();
+  return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+}
+function show(id){ document.getElementById(id).hidden = false; }
+function hide(id){ document.getElementById(id).hidden = true; }
+function toast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  clearTimeout(toast._h);
+  toast._h = setTimeout(()=>t.classList.remove('show'), 2200);
+}
+function byNum(n){ return DATA.find(q=>q.number===n); }
+
+/* ================= LIST VIEW ================= */
+const CATS = [...new Set(DATA.flatMap(q=>q.categories))].sort();
+const DIFFS = ['easy','medium','hard'];
+const DIFF_LABEL = {easy:'Easy', medium:'Medium', hard:'Hard'};
+const TYPES = ['Argue','Describe','Recount'];
+
+function renderFilterBar(){
+  const diffWrap = document.getElementById('f-diff');
+  diffWrap.innerHTML = '<button data-d="all" class="'+(filters.difficulty==='all'?'on':'')+'">全部</button>' +
+    DIFFS.map(d=>{
+      const n = DATA.filter(q=>q.difficulty===d).length;
+      return '<button data-d="'+d+'" class="'+(filters.difficulty===d?'on':'')+'">'+DIFF_LABEL[d]+' ('+n+')</button>';
+    }).join('');
+  diffWrap.querySelectorAll('button').forEach(b=>b.onclick=()=>{ filters.difficulty=b.dataset.d; persistFiltersAndRender(); });
+
+  const catSel = document.getElementById('f-cat');
+  catSel.innerHTML = '<option value="all">全部分类</option>' + CATS.map(c=>'<option value="'+esc(c)+'"'+(filters.category===c?' selected':'')+'>'+esc(c)+'</option>').join('');
+  catSel.value = filters.category;
+  catSel.onchange = ()=>{ filters.category = catSel.value; persistFiltersAndRender(); };
+
+  const typeWrap = document.getElementById('f-type');
+  typeWrap.innerHTML = '<button data-t="all" class="'+(filters.type==='all'?'on':'')+'">全部</button>' +
+    TYPES.map(t=>'<button data-t="'+t+'" class="'+(filters.type===t?'on':'')+'">'+TYPE_ZH[t]+'</button>').join('');
+  typeWrap.querySelectorAll('button').forEach(b=>b.onclick=()=>{ filters.type=b.dataset.t; persistFiltersAndRender(); });
+
+  const statusWrap = document.getElementById('f-status');
+  const statusOpts = [['all','全部'],['undone','未做'],['done','已做']];
+  statusWrap.innerHTML = statusOpts.map(([v,l])=>'<button data-s="'+v+'" class="'+(filters.status===v?'on':'')+'">'+l+'</button>').join('');
+  statusWrap.querySelectorAll('button').forEach(b=>b.onclick=()=>{ filters.status=b.dataset.s; persistFiltersAndRender(); });
+
+  const favBtn = document.getElementById('f-fav');
+  favBtn.className = filters.favOnly ? 'on' : '';
+  favBtn.onclick = ()=>{ filters.favOnly = !filters.favOnly; persistFiltersAndRender(); };
+
+  const qInput = document.getElementById('f-q');
+  qInput.value = filters.q;
+  qInput.oninput = ()=>{ filters.q = qInput.value; persistFiltersAndRender(); };
+}
+
+function filteredList(){
+  const q = (filters.q||'').trim().toLowerCase();
+  return DATA.filter(item=>{
+    if(filters.difficulty!=='all' && item.difficulty!==filters.difficulty) return false;
+    if(filters.category!=='all' && !item.categories.includes(filters.category)) return false;
+    if(filters.type!=='all' && item.prompt_type!==filters.type) return false;
+    const p = getProg(item.number);
+    if(filters.status==='undone' && p.done) return false;
+    if(filters.status==='done' && !p.done) return false;
+    if(filters.favOnly && !p.favorite) return false;
+    if(q){
+      const hay = (String(item.number)+' '+item.part1.prompt).toLowerCase();
+      if(!hay.includes(q)) return false;
+    }
+    return true;
+  });
+}
+
+function persistFiltersAndRender(){
+  lsSet('iw_filters', filters);
+  renderFilterBar();
+  renderGrid();
+}
+
+function renderGrid(){
+  const list = filteredList();
+  document.getElementById('count-line').textContent = '共 ' + list.length + ' 题';
+  const grid = document.getElementById('q-grid');
+  document.getElementById('q-empty').hidden = list.length>0;
+  grid.innerHTML = list.map(cardHtml).join('');
+  grid.querySelectorAll('.js-start').forEach(b=>b.onclick=()=>openPractice(Number(b.dataset.n)));
+  grid.querySelectorAll('.js-star').forEach(b=>b.onclick=()=>{
+    const n = Number(b.dataset.n);
+    const p = getProg(n);
+    p.favorite = !p.favorite;
+    progress[n] = p;
+    saveProgress();
+    renderGrid();
+  });
+}
+
+function cardHtml(item){
+  const p = getProg(item.number);
+  const typeBadge = item.prompt_type ? '<span class="badge type-'+item.prompt_type+'">'+TYPE_ZH[item.prompt_type]+'</span>' : '';
+  const cats = item.categories.map(c=>'<span class="tag">'+esc(c)+'</span>').join('');
+  return '' +
+  '<div class="qcard">' +
+    '<div class="top">' +
+      '<span class="num">#'+item.number+'</span>' +
+      '<span class="badge '+item.difficulty+'">'+DIFF_LABEL[item.difficulty]+'</span>' +
+      typeBadge +
+      (p.done ? '<span class="done-flag">✓ 已做</span>' : '') +
+      '<button class="star '+(p.favorite?'on':'')+' js-star" data-n="'+item.number+'" title="收藏">'+(p.favorite?'★':'☆')+'</button>' +
+    '</div>' +
+    '<div>'+cats+'</div>' +
+    '<div class="p1">'+esc(item.part1.prompt)+'</div>' +
+    '<div class="actions"><button class="primary js-start" data-n="'+item.number+'">开始练习</button></div>' +
+  '</div>';
+}
+
+document.getElementById('f-rand').onclick = ()=>{
+  const list = filteredList();
+  if(list.length===0){ toast('当前筛选下没有题目'); return; }
+  const pick = list[Math.floor(Math.random()*list.length)];
+  openPractice(pick.number);
+};
+document.getElementById('f-reset').onclick = ()=>{
+  filters = {difficulty:'all', category:'all', type:'all', status:'all', favOnly:false, q:''};
+  persistFiltersAndRender();
+};
+
+/* ================= PRACTICE FLOW ================= */
+function draftKey(n){ return 'iw_draft_'+n; }
+
+function openPractice(n){
+  const item = byNum(n);
+  if(!item) return;
+  const existing = lsGet(draftKey(n), null);
+  if(existing && existing.stage && existing.stage!=='submitted'){
+    if(confirm('检测到上次未完成的作答，是否恢复？')){
+      current = existing;
+      current.item = item;
+      showView('practice');
+      resumeFromDraft();
+      return;
+    } else {
+      lsDel(draftKey(n));
+    }
+  }
+  current = {
+    number:n, item,
+    name: lsGet('iw_name',''),
+    mode: lsGet('iw_mode','timed'),
+    stage:'entry',
+    part1Text:'', part2Text:'',
+    p1Elapsed:0, p2Elapsed:0
+  };
+  showView('practice');
+  showEntry();
+}
+
+function showView(which){
+  ['list','practice','result'].forEach(v=>{
+    document.getElementById('view-'+v).hidden = (v!==which);
+  });
+  window.scrollTo(0,0);
+}
+
+function stopTimer(){
+  if(current && current.timerHandle){ clearInterval(current.timerHandle); current.timerHandle=null; }
+}
+
+function saveDraft(){
+  if(!current) return;
+  const d = Object.assign({}, current);
+  delete d.item; delete d.timerHandle;
+  lsSet(draftKey(current.number), d);
+}
+
+/* -- entry -- */
+function showEntry(){
+  ['pv-entry','pv-prep','pv-part1','pv-part2'].forEach(id=>document.getElementById(id).hidden = (id!=='pv-entry'));
+  document.getElementById('pv-title').textContent = '#'+current.number+' · '+DIFF_LABEL[current.item.difficulty]+' · 开始练习';
+  document.getElementById('pv-name').value = current.name || '';
+  setModeButtons(current.mode);
+}
+function setModeButtons(mode){
+  document.getElementById('pv-mode-timed').className = mode==='timed' ? 'on' : '';
+  document.getElementById('pv-mode-untimed').className = mode==='untimed' ? 'on' : '';
+}
+document.getElementById('pv-mode-timed').onclick = ()=>{ current.mode='timed'; setModeButtons('timed'); };
+document.getElementById('pv-mode-untimed').onclick = ()=>{ current.mode='untimed'; setModeButtons('untimed'); };
+document.getElementById('pv-cancel').onclick = ()=>{ current=null; showView('list'); };
+document.getElementById('pv-start').onclick = ()=>{
+  const name = document.getElementById('pv-name').value.trim();
+  if(!name){ toast('请先填写姓名'); return; }
+  current.name = name;
+  lsSet('iw_name', name);
+  lsSet('iw_mode', current.mode);
+  current.stage = 'prep';
+  saveDraft();
+  enterPrep();
+};
+
+/* -- prep -- */
+function enterPrep(){
+  ['pv-entry','pv-prep','pv-part1','pv-part2'].forEach(id=>document.getElementById(id).hidden = (id!=='pv-prep'));
+  document.getElementById('prep-instr').textContent = current.item.part1.instruction;
+  document.getElementById('prep-prompt').textContent = current.item.part1.prompt;
+  let remain = current.item.part1.prep_seconds || 30;
+  const timerEl = document.getElementById('prep-timer');
+  timerEl.textContent = fmtTime(remain);
+  timerEl.classList.toggle('warn', remain<=30);
+  stopTimer();
+  if(current.mode==='timed'){
+    current.timerHandle = setInterval(()=>{
+      remain--;
+      timerEl.textContent = fmtTime(remain);
+      timerEl.classList.toggle('warn', remain<=30);
+      if(remain<=0){ stopTimer(); enterPart1(); }
+    },1000);
+  }
+}
+document.getElementById('prep-go').onclick = ()=>{ stopTimer(); enterPart1(); };
+
+/* -- part1 -- */
+function enterPart1(){
+  current.stage='part1';
+  current.p1StartTs = Date.now() - (current.p1Elapsed||0)*1000;
+  saveDraft();
+  ['pv-entry','pv-prep','pv-part1','pv-part2'].forEach(id=>document.getElementById(id).hidden = (id!=='pv-part1'));
+  hide('p1-readonly'); show('p1-editing');
+  document.getElementById('p1-instr').textContent = current.item.part1.instruction;
+  document.getElementById('p1-prompt').textContent = current.item.part1.prompt;
+  const ta = document.getElementById('p1-text');
+  ta.disabled = false;
+  ta.value = current.part1Text || '';
+  updateWc('p1');
+  ta.oninput = ()=>{ current.part1Text = ta.value; updateWc('p1'); saveDraft(); };
+  const timerBox = document.getElementById('p1-timerbox');
+  const timerEl = document.getElementById('p1-timer');
+  stopTimer();
+  if(current.mode==='timed'){
+    timerBox.hidden = false;
+    let remain = current.item.part1.timer_seconds - (current.p1Elapsed||0);
+    timerEl.textContent = fmtTime(remain);
+    timerEl.classList.toggle('warn', remain<=30);
+    current.timerHandle = setInterval(()=>{
+      remain--;
+      current.p1Elapsed = current.item.part1.timer_seconds - remain;
+      timerEl.textContent = fmtTime(remain);
+      timerEl.classList.toggle('warn', remain<=30);
+      if(remain<=0){ stopTimer(); finishPart1(); }
+    },1000);
+  } else {
+    timerBox.hidden = true;
+  }
+  ta.focus();
+}
+function updateWc(prefix){
+  const ta = document.getElementById(prefix+'-text');
+  const target = prefix==='p1' ? current.item.part1.min_words : current.item.part2.min_words;
+  const n = countWords(ta.value);
+  document.getElementById(prefix+'-wc-num').textContent = n;
+  document.getElementById(prefix+'-wc-num').classList.toggle('ok', n>=target);
+  const bar = document.getElementById(prefix+'-wc-bar');
+  bar.classList.toggle('ok', n>=target);
+  bar.querySelector('i').style.width = Math.min(100, n/target*100) + '%';
+}
+document.getElementById('p1-next').onclick = ()=>{
+  if(!confirm('提交后 Part 1 不能再修改，确定吗？')) return;
+  finishPart1();
+};
+document.getElementById('p1-abandon').onclick = abandonPractice;
+
+function finishPart1(){
+  stopTimer();
+  current.part1Text = document.getElementById('p1-text').value;
+  if(current.mode==='timed'){
+    current.p1Elapsed = current.item.part1.timer_seconds; // best effort; real elapsed tracked below via wall clock too
+  }
+  current.p1WallElapsed = Math.round((Date.now()-current.p1StartTs)/1000);
+  current.stage='part2';
+  saveDraft();
+  enterPart2();
+}
+
+/* -- part2 -- */
+function enterPart2(){
+  ['pv-entry','pv-prep','pv-part1','pv-part2'].forEach(id=>document.getElementById(id).hidden = (id!=='pv-part2'));
+  document.getElementById('p2-p1-readonly-text').textContent = current.part1Text;
+  document.getElementById('p2-instr').textContent = current.item.part2.instruction;
+  document.getElementById('p2-prompt').textContent = current.item.part2.prompt;
+  const ta = document.getElementById('p2-text');
+  ta.value = current.part2Text || '';
+  updateWc('p2');
+  ta.oninput = ()=>{ current.part2Text = ta.value; updateWc('p2'); saveDraft(); };
+  current.p2StartTs = Date.now() - (current.p2Elapsed||0)*1000;
+  const timerBox = document.getElementById('p2-timerbox');
+  const timerEl = document.getElementById('p2-timer');
+  stopTimer();
+  if(current.mode==='timed'){
+    timerBox.hidden = false;
+    let remain = current.item.part2.timer_seconds - (current.p2Elapsed||0);
+    timerEl.textContent = fmtTime(remain);
+    timerEl.classList.toggle('warn', remain<=30);
+    current.timerHandle = setInterval(()=>{
+      remain--;
+      current.p2Elapsed = current.item.part2.timer_seconds - remain;
+      timerEl.textContent = fmtTime(remain);
+      timerEl.classList.toggle('warn', remain<=30);
+      if(remain<=0){ stopTimer(); finishPart2(); }
+    },1000);
+  } else {
+    timerBox.hidden = true;
+  }
+  ta.focus();
+}
+document.getElementById('p2-submit').onclick = ()=>{
+  if(!confirm('提交后不能再修改，确定吗？')) return;
+  finishPart2();
+};
+document.getElementById('p2-abandon').onclick = abandonPractice;
+
+function finishPart2(){
+  stopTimer();
+  current.part2Text = document.getElementById('p2-text').value;
+  current.p2WallElapsed = Math.round((Date.now()-current.p2StartTs)/1000);
+  current.stage='submitted';
+  saveDraft();
+  const p = getProg(current.number);
+  p.done = true;
+  progress[current.number] = p;
+  saveProgress();
+  showResult();
+  lsDel(draftKey(current.number));
+}
+
+function abandonPractice(){
+  if(!confirm('确定要放弃本次练习并返回题目列表吗？（已填写内容已自动保存草稿）')) return;
+  stopTimer();
+  current = null;
+  showView('list');
+  renderGrid();
+}
+
+/* -- resume from draft -- */
+function resumeFromDraft(){
+  showEntry(); // ensure elements exist; will jump per stage below
+  if(current.stage==='entry'){ showEntry(); }
+  else if(current.stage==='prep'){ enterPrep(); }
+  else if(current.stage==='part1'){ enterPart1(); document.getElementById('p1-text').value = current.part1Text||''; updateWc('p1'); }
+  else if(current.stage==='part2'){ enterPart2(); }
+  else { showEntry(); }
+}
+
+/* -- result -- */
+function showResult(){
+  showView('result');
+  const item = current.item;
+  document.getElementById('res-title').textContent = '#'+current.number+' 作答完成';
+  document.getElementById('res-p1-meta').textContent = '用时 '+fmtTime(current.p1WallElapsed||0)+' · '+countWords(current.part1Text)+' 词';
+  document.getElementById('res-p1-prompt').textContent = item.part1.prompt;
+  document.getElementById('res-p1-text').textContent = current.part1Text;
+  document.getElementById('res-p2-meta').textContent = '用时 '+fmtTime(current.p2WallElapsed||0)+' · '+countWords(current.part2Text)+' 词';
+  document.getElementById('res-p2-prompt').textContent = item.part2.prompt;
+  document.getElementById('res-p2-text').textContent = current.part2Text;
+  hide('res-copytext');
+}
+document.getElementById('res-back').onclick = ()=>{ current=null; showView('list'); renderGrid(); };
+document.getElementById('res-again').onclick = ()=>{ const n = current.number; showView('list'); openPractice(n); };
+document.getElementById('res-copy').onclick = ()=>{
+  const item = current.item;
+  const text = [
+    '【Interactive Writing 作答】',
+    '学生：'+current.name,
+    '题号：#'+current.number+'（'+DIFF_LABEL[item.difficulty]+'）',
+    '日期：'+todayStr(),
+    '模式：'+(current.mode==='timed'?'计时':'不计时'),
+    '',
+    '—— Part 1（用时 '+fmtTime(current.p1WallElapsed||0)+'，'+countWords(current.part1Text)+' 词）——',
+    '题目：'+item.part1.prompt,
+    '作答：',
+    current.part1Text,
+    '',
+    '—— Part 2（用时 '+fmtTime(current.p2WallElapsed||0)+'，'+countWords(current.part2Text)+' 词）——',
+    '追问：'+item.part2.prompt,
+    '作答：',
+    current.part2Text
+  ].join('\n');
+  function fallback(){
+    const ta = document.getElementById('res-copytext');
+    ta.hidden = false;
+    ta.value = text;
+    ta.focus();
+    ta.select();
+    toast('自动复制失败，已为你选中文本，请手动复制（Ctrl+C）');
+  }
+  try{
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(text).then(()=>toast('已复制，可发给老师了')).catch(fallback);
+    } else { fallback(); }
+  }catch(e){ fallback(); }
+};
+
+/* ---------- init ---------- */
+renderFilterBar();
+renderGrid();
+</script>
+
+<script>
+/* ==== 云同步（自动生成，勿手改；改 云同步/build/ 下源码后重跑 build.mjs） ==== */
+/* ================= 云同步公共模块（由 build.mjs 注入学生页） =================
+ * 依赖：适配器在本文件之后定义 window.SYNC_ADAPTER：
+ *   task        'IR' | 'IW'
+ *   getName()   当前学生名（可为空）
+ *   setName(n)  写回学生名
+ *   setNum()    当前题号
+ *   hlRoot      生词高亮范围（CSS 选择器）
+ *   contextFor(word, node)  可选，返回原句
+ *   snapshot()/restore(s)   可选，标生词前后保护作答状态
+ */
+const SB = (() => {
+  const URL = 'https://br-cute-tahr-8eff7472.supabase.aidap-global.cn-beijing.volces.com';
+  const KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1wbGF0Zm9ybSIsInJvbGUiOiJhbm9uIiwiZXhwIjozNjg2OTI1NzYzfQ.y45vSsbxFjV9k-psYujSR2YMtDOeZW_IDZS6eBlbRFc';
+  const H = { apikey: KEY, Authorization: 'Bearer ' + KEY, 'Content-Type': 'application/json' };
+
+  async function api(path, opt = {}) {
+    const r = await fetch(URL + '/rest/v1/' + path, Object.assign({}, opt, { headers: Object.assign({}, H, opt.headers || {}) }));
+    if (!r.ok) throw new Error(r.status + ' ' + (await r.text()).slice(0, 200));
+    const t = await r.text();
+    return t ? JSON.parse(t) : null;
+  }
+  // 学生页只能调用数据库函数（见 sql/02-收紧权限.sql），不能直接读写表
+  const rpc = (fn, args, opt = {}) => api('rpc/' + fn, Object.assign({ method: 'POST', body: JSON.stringify(args) }, opt));
+
+  function uuid() {
+    if (window.crypto && crypto.randomUUID) return crypto.randomUUID();
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
+      const r = Math.random() * 16 | 0;
+      return (c === 'x' ? r : (r & 3 | 8)).toString(16);
+    });
+  }
+
+  /* ---------- 状态角标 ---------- */
+  const css = `
+  #sb-badge{position:fixed;left:12px;bottom:12px;z-index:9999;font:12.5px/1.4 -apple-system,"Segoe UI","Microsoft YaHei",sans-serif;
+    padding:5px 11px;border-radius:99px;background:#f3f4f6;color:#4b5563;border:1px solid #e5e7eb;box-shadow:0 1px 4px rgba(0,0,0,.06)}
+  #sb-badge.ok{background:#ecfdf5;color:#047857;border-color:#a7f3d0}
+  #sb-badge.err{background:#fef2f2;color:#b91c1c;border-color:#fecaca}
+  #sb-badge.busy{background:#eff6ff;color:#1d4ed8;border-color:#bfdbfe}
+  #sb-tip{position:absolute;z-index:10000;display:none;font:13px/1 -apple-system,"Segoe UI","Microsoft YaHei",sans-serif;
+    background:#111827;color:#fff;border:0;border-radius:7px;padding:7px 11px;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.2);white-space:nowrap}
+  #sb-tip:hover{background:#1f2937}
+  #sb-bookbtn{position:fixed;right:12px;bottom:12px;z-index:9999;font:13px/1.4 -apple-system,"Segoe UI","Microsoft YaHei",sans-serif;
+    padding:7px 13px;border-radius:99px;border:1px solid #fcd34d;background:#fffbeb;color:#92400e;cursor:pointer;box-shadow:0 1px 4px rgba(0,0,0,.08)}
+  #sb-book{position:fixed;right:12px;bottom:56px;z-index:9999;width:min(340px,calc(100vw - 24px));max-height:60vh;overflow:auto;display:none;
+    background:#fff;border:1px solid #e5e7eb;border-radius:12px;box-shadow:0 8px 28px rgba(0,0,0,.14);padding:12px;
+    font:13.5px/1.5 -apple-system,"Segoe UI","Microsoft YaHei",sans-serif;color:#1f2937}
+  #sb-book h4{margin:0 0 4px;font-size:14px}
+  #sb-book .hint{color:#6b7280;font-size:12px;margin-bottom:8px}
+  #sb-book .it{display:flex;gap:8px;align-items:flex-start;padding:7px 0;border-top:1px solid #f3f4f6}
+  #sb-book .it b{color:#92400e}
+  #sb-book .it .cx{color:#6b7280;font-size:12px}
+  #sb-book .it button{margin-left:auto;border:0;background:none;color:#9ca3af;cursor:pointer;font-size:15px;padding:0 2px}
+  #sb-book .it button:hover{color:#dc2626}
+  .sbv{background:#fef3c7;border-bottom:2px solid #f59e0b;border-radius:2px}
+  #sb-toast{position:fixed;left:50%;top:14px;transform:translateX(-50%);z-index:10001;background:#111827;color:#fff;
+    padding:8px 14px;border-radius:8px;font:13.5px -apple-system,"Segoe UI","Microsoft YaHei",sans-serif;display:none}
+  `;
+  const st = document.createElement('style');
+  st.textContent = css;
+  document.head.appendChild(st);
+
+  const badge = document.createElement('div');
+  badge.id = 'sb-badge';
+  badge.dataset.novocab = '1';
+  document.body.appendChild(badge);
+  function setBadge(kind, text) { badge.className = kind; badge.textContent = text; }
+
+  const toastEl = document.createElement('div');
+  toastEl.id = 'sb-toast';
+  document.body.appendChild(toastEl);
+  function toast(msg) {
+    toastEl.textContent = msg; toastEl.style.display = 'block';
+    clearTimeout(toast._h); toast._h = setTimeout(() => toastEl.style.display = 'none', 2200);
+  }
+  const hhmm = () => new Date().toTimeString().slice(0, 5);
+
+  /* ---------- 作答保存（同一次作答一行，反复覆盖） ---------- */
+  let pending = null, inflight = false;
+  async function flush() {
+    if (inflight || !pending) return;
+    const { row, keepalive } = pending;
+    pending = null; inflight = true;
+    setBadge('busy', '☁ 保存中…');
+    try {
+      await rpc('student_save', { p: row }, { keepalive });
+      setBadge('ok', row.status === 'submitted' ? '✅ 已交卷，老师已收到 ' + hhmm() : '☁ 已自动保存 ' + hhmm());
+      if (row.status === 'submitted') saveSubmission.lastOk = row.id;
+    } catch (e) {
+      console.warn('[sync]', e);
+      setBadge('err', '⚠ 保存失败，正在重试…（请检查网络）');
+      if (!pending) pending = { row, keepalive };   // 失败的留着重试，除非已有更新的
+      setTimeout(flush, 5000);
+    } finally {
+      inflight = false;
+      if (pending) setTimeout(flush, 300);
+    }
+  }
+  function saveSubmission(row, { now = false } = {}) {
+    row = Object.assign({ task_type: A().task, updated_at: new Date().toISOString() }, row);
+    pending = { row, keepalive: now };
+    if (now) flush();
+    else { clearTimeout(saveSubmission._t); saveSubmission._t = setTimeout(flush, 1500); }
+  }
+  async function findInProgress(name, setNum) {
+    const rows = await rpc('student_find', { p_name: name, p_task: A().task, p_set: setNum });
+    return rows && rows[0];
+  }
+  async function markAbandoned(id) {
+    await rpc('student_abandon', { p_id: id, p_name: A().getName() });
+  }
+
+  /* ---------- 生词本 ---------- */
+  const A = () => window.SYNC_ADAPTER;
+  let vocab = [];            // 当前学生的生词行
+  let vocabOwner = null;
+
+  const tip = document.createElement('button');
+  tip.id = 'sb-tip';
+  tip.textContent = '📌 标为生词';
+  tip.dataset.novocab = '1';
+  document.body.appendChild(tip);
+
+  const bookBtn = document.createElement('button');
+  bookBtn.id = 'sb-bookbtn';
+  bookBtn.dataset.novocab = '1';
+  document.body.appendChild(bookBtn);
+  const book = document.createElement('div');
+  book.id = 'sb-book';
+  book.dataset.novocab = '1';
+  document.body.appendChild(book);
+  bookBtn.onclick = () => { book.style.display = book.style.display === 'block' ? 'none' : 'block'; renderBook(); };
+
+  function renderBook() {
+    bookBtn.textContent = '📒 我的生词本 (' + vocab.length + ')';
+    if (book.style.display !== 'block') return;
+    const esc = s => String(s || '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+    book.innerHTML = `<h4>📒 我的生词本</h4><div class="hint">用鼠标选中文章里不认识的词 → 点「📌 标为生词」，老师那边会同步收到。</div>` +
+      (vocab.length ? vocab.map(v => `<div class="it"><div><b>${esc(v.word)}</b> <span class="cx">· ${esc(v.task_type)} #${esc(v.set_num)}</span>` +
+        (v.context ? `<div class="cx">${esc(v.context.length > 90 ? v.context.slice(0, 90) + '…' : v.context)}</div>` : '') +
+        `</div><button title="删除" data-id="${esc(v.id)}">×</button></div>`).join('')
+        : '<div class="cx">还没有标记生词</div>');
+    book.querySelectorAll('button[data-id]').forEach(b => b.onclick = () => removeWord(b.dataset.id));
+  }
+
+  async function loadVocab(force) {
+    const name = A().getName();
+    if (!name) { vocab = []; vocabOwner = null; renderBook(); highlight(); return; }
+    if (!force && name === vocabOwner) return;
+    vocabOwner = name;
+    try {
+      vocab = await rpc('vocab_list', { p_name: name }) || [];
+    } catch (e) { console.warn('[vocab]', e); }
+    renderBook(); highlight();
+  }
+
+  function ensureName() {
+    let n = A().getName();
+    if (n) return n;
+    n = (prompt('请先输入你的名字（老师靠它认出你）') || '').trim();
+    if (n) A().setName(n);
+    return n;
+  }
+
+  function sentenceAround(text, word) {
+    if (!text) return '';
+    const sents = text.replace(/\s+/g, ' ').match(/[^.!?。！？]+[.!?。！？]*["”’)]*/g) || [text];
+    const re = new RegExp('\\b' + word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\b', 'i');
+    const s = sents.find(x => re.test(x)) || '';
+    return s.trim().slice(0, 400);
+  }
+
+  async function addWord(word, node) {
+    const name = ensureName();
+    if (!name) { toast('没有名字，生词没法保存'); return; }
+    if (vocabOwner !== name) await loadVocab(true);
+    if (vocab.some(v => v.word.toLowerCase() === word.toLowerCase())) { toast('「' + word + '」已经在生词本里了'); return; }
+    let ctx = '';
+    try { ctx = (A().contextFor && A().contextFor(word, node)) || ''; } catch (e) {}
+    if (!ctx) {
+      const blk = node && (node.nodeType === 1 ? node : node.parentElement);
+      const box = blk && blk.closest('p,div,li,td');
+      ctx = sentenceAround(box ? box.textContent : '', word);
+    }
+    const row = { id: uuid(), student_name: name, task_type: A().task, set_num: A().setNum(), word, context: ctx };
+    vocab.unshift(Object.assign({ created_at: new Date().toISOString() }, row));
+    renderBook(); highlight();
+    toast('已加入生词本：' + word);
+    try {
+      await rpc('vocab_add', { p: row });
+    } catch (e) {
+      console.warn('[vocab]', e);
+      vocab = vocab.filter(v => v.id !== row.id);
+      renderBook(); highlight();
+      toast('⚠ 生词保存失败，请检查网络后重试');
+    }
+  }
+
+  async function removeWord(id) {
+    const old = vocab;
+    vocab = vocab.filter(v => v.id !== id);
+    renderBook(); highlight();
+    try { await rpc('vocab_remove', { p_id: id, p_name: vocabOwner }); }
+    catch (e) { vocab = old; renderBook(); highlight(); toast('⚠ 删除失败，请检查网络'); }
+  }
+
+  /* 选中文字 → 浮出按钮 */
+  let selWord = '', selNode = null, snap = null;
+  const SKIP = 'input,textarea,select,option,button,[data-novocab]';
+  document.addEventListener('mousedown', e => {
+    if (tip.contains(e.target)) return;
+    tip.style.display = 'none';
+    try { snap = A().snapshot ? A().snapshot() : null; } catch (err) { snap = null; }
+  }, true);
+  function onSelEnd(e) {
+    if (e && tip.contains(e.target)) return;
+    setTimeout(() => {
+      const sel = window.getSelection();
+      const raw = sel ? sel.toString() : '';
+      const w = raw.replace(/\s+/g, ' ').trim().replace(/^[^A-Za-z]+|[^A-Za-z]+$/g, '');
+      if (!sel || sel.isCollapsed || !w || w.length > 40 || w.split(' ').length > 4 || !/[A-Za-z]/.test(w)) { tip.style.display = 'none'; return; }
+      const range = sel.getRangeAt(0);
+      const anc = range.commonAncestorContainer;
+      const el = anc.nodeType === 1 ? anc : anc.parentElement;
+      const root = document.querySelector(A().hlRoot);
+      if (!el || !root || !root.contains(el) || el.closest(SKIP)) { tip.style.display = 'none'; return; }
+      selWord = w; selNode = anc;
+      const rect = range.getBoundingClientRect();
+      tip.textContent = A().snapshot ? '📌 标为生词（不影响你的答案）' : '📌 标为生词';
+      tip.style.display = 'block';
+      tip.style.left = Math.max(8, window.scrollX + rect.left + rect.width / 2 - tip.offsetWidth / 2) + 'px';
+      tip.style.top = (window.scrollY + rect.top - tip.offsetHeight - 8) + 'px';
+    }, 0);
+  }
+  document.addEventListener('mouseup', onSelEnd);
+  document.addEventListener('touchend', onSelEnd);
+  tip.addEventListener('mousedown', e => e.preventDefault());
+  tip.addEventListener('click', () => {
+    tip.style.display = 'none';
+    if (snap && A().restore) { try { A().restore(snap); } catch (e) {} }
+    const w = selWord, n = selNode;
+    window.getSelection().removeAllRanges();
+    if (w) addWord(w, n);
+  });
+
+  /* 生词高亮：只改动需要改动的文本节点，避免打断学生的选区 */
+  let hlBusy = false;
+  function highlight() {
+    const root = document.querySelector(A().hlRoot);
+    if (!root || hlBusy) return;
+    hlBusy = true;
+    try {
+      const set = new Set(vocab.map(v => v.word.toLowerCase()));
+      let unwrapped = false;
+      root.querySelectorAll('span.sbv').forEach(s => {
+        if (!set.has(s.dataset.w)) { s.replaceWith(document.createTextNode(s.textContent)); unwrapped = true; }
+      });
+      if (unwrapped) root.normalize();
+      if (!set.size) return;
+      const words = [...set].sort((a, b) => b.length - a.length).map(w => w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&').replace(/ /g, '\\s+'));
+      const re = new RegExp('\\b(' + words.join('|') + ')\\b', 'gi');
+      const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
+        acceptNode: n => (n.parentElement.closest(SKIP + ',span.sbv,script,style') ? NodeFilter.FILTER_REJECT : NodeFilter.FILTER_ACCEPT)
+      });
+      const nodes = [];
+      while (walker.nextNode()) { re.lastIndex = 0; if (re.test(walker.currentNode.nodeValue)) nodes.push(walker.currentNode); }
+      nodes.forEach(n => {
+        const frag = document.createDocumentFragment();
+        const s = n.nodeValue;
+        let last = 0;
+        re.lastIndex = 0;
+        for (let m; (m = re.exec(s));) {
+          if (m.index > last) frag.appendChild(document.createTextNode(s.slice(last, m.index)));
+          const sp = document.createElement('span');
+          sp.className = 'sbv';
+          sp.dataset.w = m[0].toLowerCase().replace(/\s+/g, ' ');
+          sp.textContent = m[0];
+          frag.appendChild(sp);
+          last = m.index + m[0].length;
+        }
+        if (last < s.length) frag.appendChild(document.createTextNode(s.slice(last)));
+        n.replaceWith(frag);
+      });
+    } finally {
+      mo.takeRecords();
+      hlBusy = false;
+    }
+  }
+  const mo = new MutationObserver(() => { clearTimeout(highlight._t); highlight._t = setTimeout(highlight, 120); });
+
+  function start() {
+    const root = document.querySelector(A().hlRoot);
+    if (root) mo.observe(root, { childList: true, subtree: true, characterData: true });
+    if (!A().getName()) setBadge('', '☁ 填写名字后开始自动保存');
+    else setBadge('', '☁ 云同步已就绪');
+    loadVocab(true);
+  }
+
+  return { api, uuid, saveSubmission, findInProgress, markAbandoned, loadVocab, setBadge, toast, start };
+})();
+
+/* ================= Interactive Writing 适配器 =================
+ * 依赖原页面的全局变量：current, DATA
+ * 以及函数：saveDraft, finishPart2, lsGet, lsSet, countWords
+ */
+(() => {
+  const nameInput = document.getElementById('pv-name');
+
+  window.SYNC_ADAPTER = {
+    task: 'IW',
+    hlRoot: '.wrap',
+    getName: () => (current && current.name) || lsGet('iw_name', '') || nameInput.value.trim(),
+    setName: n => { lsSet('iw_name', n); nameInput.value = n; if (current) current.name = n; SB.loadVocab(); },
+    setNum: () => (current ? current.number : null)
+  };
+
+  function row(status) {
+    const it = current.item;
+    const p1s = current.p1WallElapsed || (current.p1StartTs && current.stage === 'part1' ? Math.round((Date.now() - current.p1StartTs) / 1000) : 0);
+    const p2s = current.p2WallElapsed || (current.p2StartTs && current.stage === 'part2' ? Math.round((Date.now() - current.p2StartTs) / 1000) : 0);
+    return {
+      id: current.sid, student_name: current.name, set_num: current.number, status,
+      si: { prep: 0, part1: 1, part2: 2, submitted: 3 }[current.stage] ?? 0,
+      answers: {
+        mode: current.mode, stage: current.stage,
+        difficulty: it.difficulty, prompt_type: it.prompt_type || '',
+        part1: { prompt: it.part1.prompt, text: current.part1Text || '', words: countWords(current.part1Text), min_words: it.part1.min_words, seconds: p1s },
+        part2: { prompt: it.part2.prompt, text: current.part2Text || '', words: countWords(current.part2Text), min_words: it.part2.min_words, seconds: p2s }
+      },
+      time_used_seconds: p1s + p2s
+    };
+  }
+
+  const origSaveDraft = saveDraft;
+  saveDraft = function () {
+    if (current && !current.sid) current.sid = SB.uuid();
+    origSaveDraft();
+    if (!current || !current.name || !['part1', 'part2'].includes(current.stage)) return;
+    if (!(current.part1Text || current.part2Text)) return;
+    SB.saveSubmission(row('in_progress'));
+  };
+
+  const origFinish = finishPart2;
+  finishPart2 = function () {
+    if (current && !current.sid) current.sid = SB.uuid();
+    origFinish();   // 内部会 saveDraft（stage=submitted，不触发云保存）
+    SB.saveSubmission(row('submitted'), { now: true });
+    const box = document.getElementById('res-title');
+    box.insertAdjacentHTML('afterend', '<div style="background:#ecfdf5;border:1px solid #a7f3d0;color:#047857;border-radius:8px;padding:8px 12px;margin:-4px 0 12px;font-weight:600">✅ 作答已自动发送给老师，不用再手动复制发送。</div>');
+  };
+
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'hidden' && current && current.sid && current.name && ['part1', 'part2'].includes(current.stage)) {
+      SB.saveSubmission(row('in_progress'), { now: true });
+    }
+  });
+
+  document.getElementById('pv-start').addEventListener('click', () => {
+    if (current && current.name) { current.sid = current.sid || SB.uuid(); SB.loadVocab(); }
+  });
+
+  SB.start();
+
+  // 直达链接：页面地址末尾 #23 → 直接打开第 23 题
+  function openFromHash() {
+    const n = Number(location.hash.slice(1));
+    if (n && byNum(n) && !(current && current.number === n)) openPractice(n);
+  }
+  window.addEventListener('hashchange', openFromHash);
+  openFromHash();
+})();
+
+</script>
+</body>
+</html>
