@@ -952,6 +952,31 @@ const SB = (() => {
 (() => {
   const nameInput = document.getElementById('pv-name');
 
+  /* ---------- 姓名改成"拼音缩写"（如 HQ），编号 = 缩写 + 交卷时的月日时分 ---------- */
+  const ABBR = /^[A-Z]{2,6}$/;
+  nameInput.placeholder = '姓名拼音缩写，如 HQ';
+  nameInput.maxLength = 6;
+  nameInput.autocomplete = 'off';
+  const lbl = nameInput.previousElementSibling;
+  if (lbl && lbl.tagName === 'LABEL') lbl.textContent = '姓名缩写';
+  nameInput.addEventListener('input', () => {
+    const v = nameInput.value.toUpperCase().replace(/[^A-Z]/g, '');
+    if (v !== nameInput.value) nameInput.value = v;
+  });
+  // 旧版存的是中文全名之类的，不符合缩写格式就清空，让学生重新填
+  if (!ABBR.test(lsGet('iw_name', ''))) lsSet('iw_name', '');
+  // 捕获阶段先校验，不合格就拦下原页面的「开始练习」
+  document.getElementById('pv-start').addEventListener('click', e => {
+    const v = nameInput.value.trim().toUpperCase();
+    if (!ABBR.test(v)) {
+      e.stopImmediatePropagation(); e.preventDefault();
+      toast('请填姓名拼音缩写：2～6 个英文字母，例如 HQ');
+      nameInput.focus();
+    } else nameInput.value = v;
+  }, true);
+  const pad = n => String(n).padStart(2, '0');
+  const stampCode = d => pad(d.getMonth() + 1) + pad(d.getDate()) + pad(d.getHours()) + pad(d.getMinutes());
+
   window.SYNC_ADAPTER = {
     task: 'IW',
     hlRoot: '.wrap',
@@ -968,6 +993,7 @@ const SB = (() => {
       id: current.sid, student_name: current.name, set_num: current.number, status,
       si: { prep: 0, part1: 1, part2: 2, submitted: 3 }[current.stage] ?? 0,
       answers: {
+        code: current.code || null, started_at: current.startedAt || null,
         mode: current.mode, stage: current.stage,
         difficulty: it.difficulty, prompt_type: it.prompt_type || '',
         part1: { prompt: it.part1.prompt, text: current.part1Text || '', words: countWords(current.part1Text), min_words: it.part1.min_words, seconds: p1s },
@@ -989,11 +1015,20 @@ const SB = (() => {
   const origFinish = finishPart2;
   finishPart2 = function () {
     if (current && !current.sid) current.sid = SB.uuid();
+    if (current) current.code = current.name + stampCode(new Date());   // 例：HQ09241530
     origFinish();   // 内部会 saveDraft（stage=submitted，不触发云保存）
     SB.saveSubmission(row('submitted'), { now: true });
     const box = document.getElementById('res-title');
-    box.insertAdjacentHTML('afterend', '<div style="background:#ecfdf5;border:1px solid #a7f3d0;color:#047857;border-radius:8px;padding:8px 12px;margin:-4px 0 12px;font-weight:600">✅ 作答已自动发送给老师，不用再手动复制发送。</div>');
+    box.insertAdjacentHTML('afterend', `<div style="background:#ecfdf5;border:1px solid #a7f3d0;color:#047857;border-radius:8px;padding:8px 12px;margin:-4px 0 12px;font-weight:600">✅ 作答已自动发送给老师，不用再手动复制发送。作答编号：${current.code}</div>`);
   };
+
+  // 「复制作答」文本里带上编号：原页面同步读取 current.name，这里临时改一下再还原
+  document.getElementById('res-copy').addEventListener('click', () => {
+    if (!current || !current.code) return;
+    const n = current.name;
+    current.name = `${n}（编号 ${current.code}）`;
+    setTimeout(() => { if (current) current.name = n; }, 0);
+  }, true);
 
   document.addEventListener('visibilitychange', () => {
     if (document.visibilityState === 'hidden' && current && current.sid && current.name && ['part1', 'part2'].includes(current.stage)) {
@@ -1002,7 +1037,12 @@ const SB = (() => {
   });
 
   document.getElementById('pv-start').addEventListener('click', () => {
-    if (current && current.name) { current.sid = current.sid || SB.uuid(); SB.loadVocab(); }
+    if (current && current.name) {
+      current.sid = current.sid || SB.uuid();
+      current.startedAt = current.startedAt || new Date().toISOString();
+      current.code = null;
+      SB.loadVocab();
+    }
   });
 
   SB.start();
