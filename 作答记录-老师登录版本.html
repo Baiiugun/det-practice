@@ -219,6 +219,8 @@ const client = supabase.createClient(SB_URL, SB_KEY);
 const $ = id => document.getElementById(id);
 const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 const TASK = { IR: 'Interactive Reading', IW: 'Interactive Writing' };
+const DET_TASK_TYPES = Object.keys(TASK);
+const isDetSubmission = r => !!r && DET_TASK_TYPES.includes(r.task_type);
 const ls = {
   get(k, d) { try { const v = localStorage.getItem(k); return v === null ? d : JSON.parse(v); } catch (e) { return d; } },
   set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
@@ -335,11 +337,12 @@ $('btn-notify').onclick = async () => {
 /* ---------------- 数据 ---------------- */
 async function loadAll() {
   const [a, b] = await Promise.all([
-    client.from('submissions').select('*').order('updated_at', { ascending: false }).limit(1000),
+    client.from('submissions').select('*').in('task_type', DET_TASK_TYPES).order('updated_at', { ascending: false }).limit(1000),
     client.from('vocab').select('*').order('created_at', { ascending: false }).limit(3000)
   ]);
   if (a.error || b.error) { toast('读取失败：' + (a.error || b.error).message); return; }
-  subs = a.data; vocab = b.data;
+  // 服务端先筛选，浏览器再筛一次，避免共用表中的其他业务记录混入。
+  subs = (a.data || []).filter(isDetSubmission); vocab = b.data;
   if (seenVocab === null) { seenVocab = new Date().toISOString(); ls.set('t_seen_vocab', seenVocab); }
   // 第一次打开时，把历史记录都当作已读
   if (!ls.get('t_seen_init', false)) {
@@ -357,6 +360,16 @@ function upsertLocal(arr, row) {
 function onSubChange(p) {
   if (p.eventType === 'DELETE') { subs = subs.filter(x => x.id !== p.old.id); renderAll(); return; }
   const r = p.new;
+  // submissions 是 DET 和查词系统共用的表。这里只接收真正的 DET 作答，
+  // 防止“考研英语二-标生词”等查词提交出现在 DET 作答记录中。
+  if (!isDetSubmission(r)) {
+    if (subs.some(x => x.id === r.id)) {
+      subs = subs.filter(x => x.id !== r.id);
+      if (selId === r.id) selId = null;
+      renderAll();
+    }
+    return;
+  }
   const before = subs.find(x => x.id === r.id);
   upsertLocal(subs, r);
   subs.sort((x, y) => (y.updated_at || '').localeCompare(x.updated_at || ''));
@@ -546,7 +559,7 @@ function renderStudentFilters() {
 function filteredSubs() {
   const stu = $('f-stu').value, task = $('f-task').value, st = $('f-status').value;
   return subs.filter(r =>
-    (!stu || r.student_name === stu) && (!task || r.task_type === task) &&
+    isDetSubmission(r) && (!stu || r.student_name === stu) && (!task || r.task_type === task) &&
     (st === 'all' || (st === 'active' ? r.status !== 'abandoned' : r.status === st)));
 }
 function renderSubs() {
