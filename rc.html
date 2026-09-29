@@ -1,0 +1,559 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>RC 学生练习版（云同步）</title><style>
+*{box-sizing:border-box}body{margin:0;font:16px/1.6 -apple-system,"Segoe UI","Microsoft YaHei",sans-serif;color:#1c1c1e;background:#f6f7f9}
+header{position:sticky;top:0;z-index:20;background:#fff;border-bottom:1px solid #e3e5e8;padding:10px 16px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+h1{font-size:16px;margin:0;font-weight:700}
+select,button,input{font:inherit;padding:5px 10px;border:1px solid #cfd3d8;border-radius:6px;background:#fff}
+button{cursor:pointer}button.pri{background:#2563eb;color:#fff;border-color:#2563eb}
+.pill{font-size:12px;padding:2px 9px;border-radius:99px;background:#eef2ff;color:#3730a3;font-weight:600}
+.pill.medium{background:#fff7ed;color:#9a3412}.pill.easy{background:#ecfdf5;color:#047857}
+#timer{font-variant-numeric:tabular-nums;font-weight:700}#timer.warn{color:#dc2626}
+.wrap{max-width:900px;margin:14px auto;padding:0 14px}
+.card{background:#fff;border:1px solid #e3e5e8;border-radius:10px;padding:18px 20px}
+.instr{color:#6b7280;font-size:14px;margin-bottom:10px}
+h2{font-size:18px;margin:0 0 12px}
+#passage{font-size:18px;line-height:2.5}
+.w{display:inline-block;white-space:nowrap}
+.g{font-weight:600}
+.w input{width:1.25em;height:1.7em;padding:0;text-align:center;font:600 17px/1 ui-monospace,Consolas,monospace;border:0;border-bottom:2px solid #2563eb;border-radius:0;background:#f8fafc;margin:0 1px}
+.w input:focus{outline:0;background:#dbeafe}
+.w.ok input{border-color:#16a34a;background:#f0fdf4;color:#15803d}
+.w.no input{border-color:#dc2626;background:#fef2f2;color:#b91c1c}
+.fix{font-size:13px;color:#15803d;font-weight:700;margin-left:2px}
+.res{background:#f0fdf4;border:1px solid #86efac;border-radius:8px;padding:10px 14px;margin:0 0 14px;font-weight:600}
+.todo{color:#b45309;background:#fffbeb;border:1px dashed #fbbf24;border-radius:8px;padding:10px;margin-bottom:12px}
+</style></head><body>
+<header>
+ <h1>Read and Complete · 练习</h1>
+ <select id="pick"></select>
+ <span class="pill" id="diff"></span>
+ <span id="timer">03:00</span>
+ <button id="submit" class="pri">交卷</button>
+ <button id="retry">重做本题</button>
+ <input id="who" placeholder="你的名字" style="width:110px">
+</header>
+<div class="wrap"><div class="card">
+ <div class="instr">补全单词：每个词已给出开头字母，在方框里填入缺失的字母（大小写都可以）。时间 3 分钟，时间到自动交卷。</div>
+ <h2 id="title"></h2>
+ <div id="passage"></div>
+ <div id="result" style="margin-top:14px"></div>
+</div></div>
+<script>
+const SETS=[{"num":1566,"difficulty":"super_easy","det":"10 ~ 60","title":"Maria's Daily Routine in a Tropical Region","nblanks":8,"timer":180,"tokens":["Living in a tropical region, Maria wakes up ",["ea","rly"]," every day to avoid the midday heat. As a ",["scie","ntist"],", she studies marine life and packs a ",["sand","wich"]," for lunch. She gets ready quickly in the morning before heading out. Her daily routine is more structured ",["th","an"]," that of a ",["tou","rist"],". She ",["li","ves"]," ",["cl","ose"]," to the beach, which attracts ",["ma","ny"]," visitors."]},{"num":1561,"difficulty":"super_easy","det":"10 ~ 60","title":"Family Picnic Plans","nblanks":9,"timer":180,"tokens":["This ",["wee","kend"]," we have a family picnic planned ",["ne","ar"]," the lake. Everyone will bring a dish. We have decided to ",["wa","sh"]," the fruits and vegetables ",["qu","ite"]," thoroughly. I have a ",["bot","tle"]," of juice to share with ",["ea","ch"]," person. We will celebrate my cousin who was ",["bo","rn"]," last month. See you ",["tomo","rrow"],", and ",["th","ank"]," you for your help!"]},{"num":1653,"difficulty":"super_easy","det":"10 ~ 60","title":"Radio Nostalgia","nblanks":11,"timer":180,"tokens":["When I was in school, I listened to the radio all the time. I ",["wo","uld"]," play ",["i","t"]," in ",["m","y"]," car, driving ",["t","o"]," and ",["fr","om"]," school ",["wi","th"]," my ",["fri","ends"],". These ",["da","ys"],", I often ",["lis","ten"]," to ",["mu","sic"]," on ",["t","he"]," Internet. But I like the radio when I am in the car."]},{"num":1792,"difficulty":"super_easy","det":"10 ~ 60","title":"Picking Flowers for Teacher's Birthday","nblanks":14,"timer":180,"tokens":["My daughter wanted to pick flowers for her teacher's birthday. We ",["we","nt"]," to ",["t","he"]," garden ",["ea","rly"]," in ",["t","he"]," morning ",["wh","en"]," the ",["flo","wers"]," were ",["st","ill"]," fresh. She ",["ch","ose"]," bright ",["yel","low"]," daisies ",["a","nd"]," red tulips. I ",["hel","ped"]," her ",["c","ut"]," the ",["st","ems"]," carefully ",["s","o"]," the flowers would last longer. We put them in a pretty vase with water."]},{"num":1832,"difficulty":"super_easy","det":"10 ~ 60","title":"Building Confidence in Young Swimmers","nblanks":15,"timer":180,"tokens":["Learning to swim can be scary for young children at first. The shallow ",["e","nd"]," of ",["t","he"]," pool ",["i","s"]," the ",["be","st"]," place ",["t","o"]," start ",["bec","ause"]," they ",["c","an"]," stand ",["u","p"]," easily. In ",["th","is"]," water, ",["chil","dren"]," can ",["prac","tice"]," moving ",["th","eir"]," arms ",["a","nd"]," legs ",["wit","hout"]," fear ",["o","f"]," drowning. They can build confidence before moving to deeper areas of the pool."]},{"num":1437,"difficulty":"easy","det":"60 ~ 95","title":"David's Tough Morning","nblanks":9,"timer":180,"tokens":["Every morning, David starts his day with a cup of ",["cof","fee"]," and toast with ",["but","ter"],". Yesterday, he ",["lo","st"]," his keys and was ",["cau","ght"]," in traffic. This made him late for a meeting with his ",["bo","ss"]," who was not pleased. Later, he had to ",["ass","ist"]," a colleague with a ",["sys","tem"]," issue, which was his ",["fou","rth"]," task for the day. David felt ",["so","rry"]," for the trouble he caused."]},{"num":1719,"difficulty":"easy","det":"60 ~ 95","title":"Chilly Room Dilemma","nblanks":11,"timer":180,"tokens":["The temperature in this room is nearly unbearable. Even ",["i","n"]," the ",["mid","dle"]," of ",["sum","mer"],", it's abnormally ",["chi","lly"]," in ",["he","re"],". I can't concentrate ",["wh","en"]," my ",["fin","gers"]," and ",["to","es"]," feel ",["li","ke"]," they'll ",["fre","eze"]," right ",["o","ff"],". We need to request an adjustment to the climate settings from the maintenance staff."]},{"num":1684,"difficulty":"easy","det":"60 ~ 95","title":"Winter Skating in Town","nblanks":11,"timer":180,"tokens":["Skating is a great way to get exercise in the winter. In ",["t","he"]," center ",["o","f"]," town ",["th","ere"]," is a park ",["wi","th"]," a ",["la","ke"]," that ",["fre","ezes"]," in December. You ",["c","an"]," rent a pair ",["o","f"]," skates ",["fr","om"]," the ",["spo","rts"]," store ",["nea","rby"],". In the winter, everyone in town comes out and skates on the ice."]},{"num":1744,"difficulty":"easy","det":"60 ~ 95","title":"Reema's Hospitality","nblanks":12,"timer":180,"tokens":["When Reema hosts people at her home, she bends over backwards to ensure that they are taken care of. In ",["h","er"]," view, the ",["com","fort"]," and ",["relax","ation"]," of ",["h","er"]," guests ",["i","s"]," of ",["t","he"]," utmost ",["impor","tance"],". She emphasizes their ",["des","ires"]," and ",["wo","rks"]," noticeably ",["ha","rd"]," to ",["pro","vide"]," them ",["wi","th"]," everything. While it is lovely to be spoiled in this way, it's also a little bit overwhelming."]},{"num":1908,"difficulty":"easy","det":"60 ~ 95","title":"Family Fun Day at the Fire Station","nblanks":13,"timer":180,"tokens":["The local fire station opened its doors for families last Saturday. Children ",["we","re"]," excited ",["t","o"]," see ",["t","he"]," big ",["r","ed"]," fire ",["tru","cks"]," up ",["cl","ose"],". The firefighters ",["sho","wed"]," them ",["h","ow"]," the ",["equi","pment"]," works ",["a","nd"]," explained ",["wh","at"]," each ",["to","ol"]," is ",["us","ed"]," for. They demonstrated how quickly they can put on their protective gear and slide down the pole. At the end of the visit, each child received a plastic fire helmet to take home."]},{"num":1883,"difficulty":"easy","det":"60 ~ 95","title":"Volunteers Assist Elderly with Yard Work","nblanks":13,"timer":180,"tokens":["Every Saturday morning, a group of volunteers gathers at the community center. They ",["co","me"]," to ",["he","lp"]," elderly residents ",["wi","th"]," their ",["ya","rd"]," work. ",["So","me"]," people ",["ra","ke"]," leaves, ",["wh","ile"]," others ",["tr","im"]," bushes ",["a","nd"]," pull ",["we","eds"],". The elderly homeowners ",["a","re"]," very grateful ",["f","or"]," the ",["he","lp"],". Many of them cannot do heavy physical work anymore, so the volunteers make a real difference in their lives."]},{"num":1828,"difficulty":"easy","det":"60 ~ 95","title":"Sarah's New Job at the Campus Bookstore","nblanks":15,"timer":180,"tokens":["Sarah needed a part-time job to help pay for college expenses. She ",["loo","ked"]," around ",["cam","pus"]," for ",["sev","eral"]," weeks ",["bef","ore"]," finding ",["anyt","hing"],". Finally, ",["s","he"]," discovered an ",["ope","ning"]," at the ",["cam","pus"]," bookstore ",["th","at"]," paid ",["we","ll"],". The ",["man","ager"]," was ",["frie","ndly"]," and ",["under","stood"]," that ",["stud","ents"]," need ",["flex","ible"]," schedules. Sarah was thrilled to start working there next Monday."]},{"num":1833,"difficulty":"easy","det":"60 ~ 95","title":"Budget-Friendly Family Road Trip","nblanks":15,"timer":180,"tokens":["The Johnson family decided to plan an affordable road trip for their summer vacation. They ",["wan","ted"]," to ",["vi","sit"]," several ",["nati","onal"]," parks ",["wit","hout"]," spending ",["t","oo"]," much ",["mo","ney"],". After ",["loo","king"]," at ",["th","eir"]," budget, ",["th","ey"]," realized ",["th","ey"]," could ",["sa","ve"]," money ",["b","y"]," camping ",["ins","tead"]," of ",["sta","ying"]," in ",["hot","els"],". They packed their car with tents, sleeping bags, and plenty of snacks for the long drive ahead."]},{"num":1944,"difficulty":"easy","det":"60 ~ 95","title":"Free Tax Preparation Services at the Community Center","nblanks":15,"timer":180,"tokens":["The community center offers free tax preparation services every spring. ",["Ma","ny"]," volunteers ",["co","me"]," to ",["he","lp"]," residents ",["wi","th"]," their ",["t","ax"]," returns ",["dur","ing"]," the ",["bu","sy"]," season. You ",["c","an"]," bring ",["yo","ur"]," documents ",["a","nd"]," get ",["he","lp"]," from ",["tra","ined"]," professionals ",["w","ho"]," know ",["t","he"]," tax ",["co","de"],". The service is available to anyone in the neighborhood who needs assistance with their paperwork."]},{"num":1913,"difficulty":"easy","det":"60 ~ 95","title":"Sarah's First Laundry Experience","nblanks":16,"timer":180,"tokens":["Sarah stared at the pile of dirty clothes on her dorm room floor. She ",["h","ad"]," never ",["do","ne"]," laundry ",["bef","ore"]," leaving ",["f","or"]," college. Her ",["m","om"]," had ",["alw","ays"]," taken ",["ca","re"]," of ",["i","t"]," at ",["ho","me"],". Now ",["s","he"]," needed ",["t","o"]," learn ",["qui","ckly"]," or ",["s","he"]," would ",["r","un"]," out ",["o","f"]," clean ",["clo","thes"],". She grabbed her basket and headed to the laundry room, hoping she wouldn't ruin anything important."]},{"num":1468,"difficulty":"medium","det":"95 ~ 125","title":"Finding Comfort in a New Town","nblanks":7,"timer":180,"tokens":["When I first arrived in the ",["sout","hern"]," town, I was struck by the beauty of the landscape. However, the ",["ta","sk"]," of finding a job filled me with some ",["des","pair"],". One evening, I decided to take a break and ",["ri","de"]," my bike through the peaceful streets. To my surprise, I stumbled upon a charming café. The owner greeted me warmly, ",["a","s"]," if I were an old friend. “No need to ",["apol","ogize"]," for being new here,” she said with a smile that felt like it was ",["mi","ne"],"."]},{"num":1578,"difficulty":"medium","det":"95 ~ 125","title":"Global Crisis and Its Impacts","nblanks":8,"timer":180,"tokens":["The news lately has been focused on the global ",["cri","sis"]," that seems to be affecting everyone. Reports include ",["descri","ptions"]," of economic downturns and the use of dangerous ",["wea","pons"]," in conflict zones. Additionally, there have been stories about ",["pers","onal"]," struggles, highlighting how the situation affects individuals. The government has been criticized for its ",["po","or"]," handling of the situation. Experts say the impact has ",["alr","eady"]," been significant and could get ",["fur","ther"]," worse if no action is taken. The mayor declined to ",["com","ment"]," on future plans."]},{"num":1625,"difficulty":"medium","det":"95 ~ 125","title":"Potentially Habitable Exoplanets Discovered","nblanks":13,"timer":180,"tokens":["Scientists have been able to identify six planets outside of the solar system that are about the same size and temperature as Earth. These ",["pla","nets"]," may ",["ha","ve"]," the ",["pote","ntial"]," to ",["sup","port"]," life. These ",["pla","nets"]," are ",["n","ot"]," visible ",["fr","om"]," Earth due ",["t","o"]," the ",["fa","ct"]," that ",["th","ey"]," are ",["loc","ated"]," outside ",["t","he"]," solar ",["sys","tem"],". Scientists predict that they will find more planets in the future, since much of the universe has not yet been studied."]},{"num":1710,"difficulty":"medium","det":"95 ~ 125","title":"Struggling with Productivity","nblanks":13,"timer":180,"tokens":["Tim has been feeling lately like he just can't get anything done. He ",["dri","nks"]," plenty ",["o","f"]," coffee, and ",["tr","ies"]," to ",["moti","vate"]," himself, but ",["h","e"]," just can't achieve ",["anyt","hing"],". He ",["gue","sses"]," that ",["t","he"]," problem ",["mi","ght"]," be a lack ",["o","f"]," sleep, or ",["per","haps"]," he ",["h","as"]," an ",["ill","ness"],". He definitely needs to figure it out so that he can accomplish more."]},{"num":1764,"difficulty":"medium","det":"95 ~ 125","title":"Lincoln High's Innovative Book-Carrying Robot","nblanks":15,"timer":180,"tokens":["The robotics team at Lincoln High School wanted to help their classmates. They ",["not","iced"]," that ",["so","me"]," students ",["h","ad"]," trouble ",["carr","ying"]," their ",["bo","oks"]," around ",["t","he"]," school. ",["T","he"]," team ",["dec","ided"]," to ",["bu","ild"]," a ",["ro","bot"]," that ",["co","uld"]," carry ",["he","avy"]," bags ",["a","nd"]," follow ",["stud","ents"]," to ",["th","eir"]," classes. After weeks of hard work, they created a small robot that uses sensors to stay close to its user. The device has already helped many students and teachers are impressed with the team's creativity."]},{"num":1844,"difficulty":"medium","det":"95 ~ 125","title":"Studying Plastic Pollution in the Green River","nblanks":16,"timer":180,"tokens":["The Green River Conservation Group recently started studying plastic pollution in the local waterway. They ",["col","lect"]," samples ",["fr","om"]," the ",["ri","ver"]," every ",["we","ek"]," and ",["te","st"]," them ",["f","or"]," plastic ",["part","icles"],". The ",["gr","oup"]," found ",["th","at"]," plastic ",["bot","tles"]," and ",["ba","gs"]," are ",["t","he"]," most ",["com","mon"]," types ",["o","f"]," pollution ",["i","n"]," the ",["wa","ter"],". They hope their research will help the city create better policies to reduce plastic waste in the future."]},{"num":1660,"difficulty":"medium","det":"95 ~ 125","title":"John's Entrepreneurial Journey","nblanks":17,"timer":180,"tokens":["John wanted to start his own business when he graduated from college, but he wasn't sure what to do. He ",["kn","ew"]," he ",["wan","ted"]," to ",["b","e"]," an ",["entrep","reneur"],", but ",["h","e"]," wasn't sure ",["wh","at"]," kind ",["o","f"]," business ",["h","e"]," wanted ",["t","o"]," have. He didn't ",["ha","ve"]," anyone ",["t","o"]," talk ",["t","o"]," about ",["th","is"],", so ",["h","e"]," read ",["every","thing"]," he ",["co","uld"]," about ",["busi","ness"]," administration. One book in particular helped him make the decision he had been so long in coming to."]},{"num":1879,"difficulty":"medium","det":"95 ~ 125","title":"Designing Safer Bike Routes","nblanks":17,"timer":180,"tokens":["Lisa works as a transportation planner for the city. She ",["des","igns"]," bike-friendly ",["rou","tes"]," through ",["bu","sy"]," neighborhoods ",["a","nd"]," quiet ",["str","eets"],". She ",["stu","dies"]," traffic ",["patt","erns"]," and ",["me","ets"]," with ",["lo","cal"]," residents ",["t","o"]," understand ",["th","eir"]," needs. Her ",["go","al"]," is ",["t","o"]," make ",["cyc","ling"]," safer ",["a","nd"]," more ",["pop","ular"]," in ",["t","he"]," city. Last month, she completed plans for three new bike lanes that will connect parks to schools."]},{"num":1839,"difficulty":"medium","det":"95 ~ 125","title":"Maria's Community Watch Success","nblanks":18,"timer":180,"tokens":["Maria noticed crime was increasing in her neighborhood. She ",["dec","ided"]," to ",["d","o"]," something ",["ab","out"]," it ",["b","y"]," starting a community watch ",["pro","gram"],". She ",["tal","ked"]," to ",["h","er"]," neighbors ",["a","nd"]," organized ",["wee","kly"]," meetings. Thanks ",["t","o"]," Maria's ",["leade","rship"],", ",["t","he"]," residents ",["we","re"]," able ",["t","o"]," work ",["toge","ther"]," and ",["red","uce"]," crime ",["i","n"]," their ",["ar","ea"],". Today the neighborhood is safer and Maria is proud of what they accomplished together."]},{"num":1630,"difficulty":"medium","det":"95 ~ 125","title":"Afina's Successful Business Launch","nblanks":18,"timer":180,"tokens":["Afina had been working on this new business idea for a while. After ",["mon","ths"]," of ",["ha","rd"]," work, ",["t","he"]," new ",["busi","ness"]," opened. Thanks ",["t","o"]," Afina's knowledge ",["o","f"]," public ",["rela","tions"],", she ",["a","nd"]," her co-owners ",["we","re"]," able ",["t","o"]," generate a ",["l","ot"]," of ",["bu","zz"]," around ",["t","he"]," new ",["busi","ness"],". The ",["res","ult"]," was a ",["l","ot"]," of ",["cro","wds"]," and tons of ",["sa","les"],". Today the business is better than ever and Afina is happy she decided to start this small business in the first place."]}];
+const $=id=>document.getElementById(id);
+let cur,ans={},left=180,tid=null,done=false;
+const blanksOf=()=>cur.tokens.filter(z=>typeof z!=="string");
+
+function init(){
+  SETS.forEach((s,i)=>{const o=document.createElement("option");o.value=i;
+    o.textContent="#"+s.num+"  "+({super_easy:"Super Easy",easy:"Easy",medium:"Medium"}[s.difficulty]||s.difficulty)+"  ("+s.nblanks+" 词)";$("pick").appendChild(o);});
+  $("pick").onchange=()=>load($("pick").value);
+  $("submit").onclick=()=>grade();
+  $("retry").onclick=()=>load($("pick").value);
+  load(0);
+}
+function load(i){
+  cur=SETS[i];$("pick").value=i;ans={};done=false;left=cur.timer;clearInterval(tid);
+  $("diff").textContent=cur.det;$("diff").className="pill "+cur.difficulty;
+  $("title").textContent=cur.title;$("result").innerHTML="";$("submit").disabled=false;
+  draw();tick();tid=setInterval(tick,1000);
+}
+function draw(){
+  const box=$("passage");box.innerHTML="";let n=0;
+  cur.tokens.forEach(t=>{
+    if(typeof t==="string"){box.appendChild(document.createTextNode(t));return}
+    const k=++n,w=document.createElement("span");w.className="w";w.dataset.k=k;
+    const g=document.createElement("span");g.className="g";g.textContent=t[0];w.appendChild(g);
+    const miss=t[1].length,v0=(ans[k]||"");
+    for(let j=0;j<miss;j++){
+      const x=document.createElement("input");x.maxLength=1;x.autocomplete="off";x.autocapitalize="off";x.spellcheck=false;
+      x.value=(v0[j]||"").trim();x.dataset.k=k;x.dataset.j=j;
+      x.oninput=()=>{const v=x.value.replace(/\s/g,"");x.value=v.slice(-1);setLetter(k,j,x.value,miss);
+        if(x.value){const nx=nextInput(x);nx&&nx.focus()}};
+      x.onkeydown=e=>{if(e.key==="Backspace"&&!x.value){const p=prevInput(x);if(p){p.focus();p.value="";setLetter(+p.dataset.k,+p.dataset.j,"",blanksOf()[+p.dataset.k-1][1].length)}e.preventDefault()}
+        else if(e.key==="ArrowLeft"){const p=prevInput(x);p&&p.focus()}else if(e.key==="ArrowRight"){const p=nextInput(x);p&&p.focus()}};
+      x.onfocus=()=>x.select();
+      w.appendChild(x);
+    }
+    box.appendChild(w);
+  });
+}
+const inputs=()=>[...$("passage").querySelectorAll("input")];
+const nextInput=x=>{const a=inputs();return a[a.indexOf(x)+1]};
+const prevInput=x=>{const a=inputs();return a[a.indexOf(x)-1]};
+function setLetter(k,j,v,miss){
+  const a=(ans[k]||"").padEnd(miss," ").split("");a[j]=v||" ";
+  const s=a.join("").replace(/\s+$/,"");
+  if(s.trim())ans[k]=s;else delete ans[k];
+}
+function tick(){
+  if(done)return;
+  const m=Math.floor(Math.max(left,0)/60),s=Math.max(left,0)%60;
+  $("timer").textContent=String(m).padStart(2,"0")+":"+String(s).padStart(2,"0");
+  $("timer").className=left<=30?"warn":"";
+  if(left<=0){grade();return}
+  left--;
+}
+function grade(){
+  if(done)return;done=true;clearInterval(tid);$("submit").disabled=true;
+  let ok=0,tot=0;
+  $("passage").querySelectorAll(".w").forEach(w=>{
+    const k=+w.dataset.k,t=blanksOf()[k-1];
+    const stu=(ans[k]||"").padEnd(t[1].length," ");
+    const good=stu.toLowerCase()===t[1].toLowerCase();tot++;if(good)ok++;
+    w.classList.add(good?"ok":"no");w.querySelectorAll("input").forEach(i=>i.disabled=true);
+    if(!good){const f=document.createElement("span");f.className="fix";f.textContent="→ "+t[0]+t[1];w.appendChild(f)}
+  });
+  $("result").innerHTML='<div class="res">得分：'+ok+' / '+tot+'（'+Math.round(ok/tot*100)+'%）</div>';
+}
+init();
+</script>
+<script>
+/* ==== 云同步（自动生成，勿手改；改 云同步/build/ 下源码后重跑 build.mjs） ==== */
+/* ================= 云同步公共模块（由 build.mjs 注入学生页） =================
+ * 依赖：适配器在本文件之后定义 window.SYNC_ADAPTER：
+ *   task        'IR' | 'IW'
+ *   getName()   当前学生名（可为空）
+ *   setName(n)  写回学生名
+ *   setNum()    当前题号
+ *   hlRoot      生词高亮范围（CSS 选择器）
+ *   contextFor(word, node)  可选，返回原句
+ *   snapshot()/restore(s)   可选，标生词前后保护作答状态
+ */
+const SB = (() => {
+  const URL = 'https://br-cute-tahr-8eff7472.supabase.aidap-global.cn-beijing.volces.com';
+  const KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1wbGF0Zm9ybSIsInJvbGUiOiJhbm9uIiwiZXhwIjozNjg2OTI1NzYzfQ.y45vSsbxFjV9k-psYujSR2YMtDOeZW_IDZS6eBlbRFc';
+  const H = { apikey: KEY, Authorization: 'Bearer ' + KEY, 'Content-Type': 'application/json' };
+
+  async function api(path, opt = {}) {
+    const r = await fetch(URL + '/rest/v1/' + path, Object.assign({}, opt, { headers: Object.assign({}, H, opt.headers || {}) }));
+    if (!r.ok) throw new Error(r.status + ' ' + (await r.text()).slice(0, 200));
+    const t = await r.text();
+    return t ? JSON.parse(t) : null;
+  }
+  // 学生页只能调用数据库函数（见 sql/02-收紧权限.sql），不能直接读写表
+  const rpc = (fn, args, opt = {}) => api('rpc/' + fn, Object.assign({ method: 'POST', body: JSON.stringify(args) }, opt));
+
+  function uuid() {
+    if (window.crypto && crypto.randomUUID) return crypto.randomUUID();
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
+      const r = Math.random() * 16 | 0;
+      return (c === 'x' ? r : (r & 3 | 8)).toString(16);
+    });
+  }
+
+  /* ---------- 状态角标 ---------- */
+  const css = `
+  #sb-badge{position:fixed;left:12px;bottom:12px;z-index:9999;font:12.5px/1.4 -apple-system,"Segoe UI","Microsoft YaHei",sans-serif;
+    padding:5px 11px;border-radius:99px;background:#f3f4f6;color:#4b5563;border:1px solid #e5e7eb;box-shadow:0 1px 4px rgba(0,0,0,.06)}
+  #sb-badge.ok{background:#ecfdf5;color:#047857;border-color:#a7f3d0}
+  #sb-badge.err{background:#fef2f2;color:#b91c1c;border-color:#fecaca}
+  #sb-badge.busy{background:#eff6ff;color:#1d4ed8;border-color:#bfdbfe}
+  #sb-tip{position:absolute;z-index:10000;display:none;font:13px/1 -apple-system,"Segoe UI","Microsoft YaHei",sans-serif;
+    background:#111827;color:#fff;border:0;border-radius:7px;padding:7px 11px;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.2);white-space:nowrap}
+  #sb-tip:hover{background:#1f2937}
+  #sb-bookbtn{position:fixed;right:12px;bottom:12px;z-index:9999;font:13px/1.4 -apple-system,"Segoe UI","Microsoft YaHei",sans-serif;
+    padding:7px 13px;border-radius:99px;border:1px solid #fcd34d;background:#fffbeb;color:#92400e;cursor:pointer;box-shadow:0 1px 4px rgba(0,0,0,.08)}
+  #sb-book{position:fixed;right:12px;bottom:56px;z-index:9999;width:min(340px,calc(100vw - 24px));max-height:60vh;overflow:auto;display:none;
+    background:#fff;border:1px solid #e5e7eb;border-radius:12px;box-shadow:0 8px 28px rgba(0,0,0,.14);padding:12px;
+    font:13.5px/1.5 -apple-system,"Segoe UI","Microsoft YaHei",sans-serif;color:#1f2937}
+  #sb-book h4{margin:0 0 4px;font-size:14px}
+  #sb-book .hint{color:#6b7280;font-size:12px;margin-bottom:8px}
+  #sb-book .it{display:flex;gap:8px;align-items:flex-start;padding:7px 0;border-top:1px solid #f3f4f6}
+  #sb-book .it b{color:#92400e}
+  #sb-book .it .cx{color:#6b7280;font-size:12px}
+  #sb-book .it button{margin-left:auto;border:0;background:none;color:#9ca3af;cursor:pointer;font-size:15px;padding:0 2px}
+  #sb-book .it button:hover{color:#dc2626}
+  .sbv{background:#fef3c7;border-bottom:2px solid #f59e0b;border-radius:2px}
+  #sb-toast{position:fixed;left:50%;top:14px;transform:translateX(-50%);z-index:10001;background:#111827;color:#fff;
+    padding:8px 14px;border-radius:8px;font:13.5px -apple-system,"Segoe UI","Microsoft YaHei",sans-serif;display:none}
+  `;
+  const st = document.createElement('style');
+  st.textContent = css;
+  document.head.appendChild(st);
+
+  const badge = document.createElement('div');
+  badge.id = 'sb-badge';
+  badge.dataset.novocab = '1';
+  document.body.appendChild(badge);
+  function setBadge(kind, text) { badge.className = kind; badge.textContent = text; }
+
+  const toastEl = document.createElement('div');
+  toastEl.id = 'sb-toast';
+  document.body.appendChild(toastEl);
+  function toast(msg) {
+    toastEl.textContent = msg; toastEl.style.display = 'block';
+    clearTimeout(toast._h); toast._h = setTimeout(() => toastEl.style.display = 'none', 2200);
+  }
+  const hhmm = () => new Date().toTimeString().slice(0, 5);
+
+  /* ---------- 作答保存（同一次作答一行，反复覆盖） ---------- */
+  let pending = null, inflight = false;
+  async function flush() {
+    if (inflight || !pending) return;
+    const { row, keepalive } = pending;
+    pending = null; inflight = true;
+    setBadge('busy', '☁ 保存中…');
+    try {
+      await rpc('student_save', { p: row }, { keepalive });
+      setBadge('ok', row.status === 'submitted' ? '✅ 已交卷，老师已收到 ' + hhmm() : '☁ 已自动保存 ' + hhmm());
+      if (row.status === 'submitted') saveSubmission.lastOk = row.id;
+    } catch (e) {
+      console.warn('[sync]', e);
+      setBadge('err', '⚠ 保存失败，正在重试…（请检查网络）');
+      if (!pending) pending = { row, keepalive };   // 失败的留着重试，除非已有更新的
+      setTimeout(flush, 5000);
+    } finally {
+      inflight = false;
+      if (pending) setTimeout(flush, 300);
+    }
+  }
+  function saveSubmission(row, { now = false } = {}) {
+    row = Object.assign({ task_type: A().task, updated_at: new Date().toISOString() }, row);
+    pending = { row, keepalive: now };
+    if (now) flush();
+    else { clearTimeout(saveSubmission._t); saveSubmission._t = setTimeout(flush, 1500); }
+  }
+  async function findInProgress(name, setNum) {
+    const rows = await rpc('student_find', { p_name: name, p_task: A().task, p_set: setNum });
+    return rows && rows[0];
+  }
+  async function markAbandoned(id) {
+    await rpc('student_abandon', { p_id: id, p_name: A().getName() });
+  }
+
+  /* ---------- 生词本 ---------- */
+  const A = () => window.SYNC_ADAPTER;
+  let vocab = [];            // 当前学生的生词行
+  let vocabOwner = null;
+
+  const tip = document.createElement('button');
+  tip.id = 'sb-tip';
+  tip.textContent = '📌 标为生词';
+  tip.dataset.novocab = '1';
+  document.body.appendChild(tip);
+
+  const bookBtn = document.createElement('button');
+  bookBtn.id = 'sb-bookbtn';
+  bookBtn.dataset.novocab = '1';
+  document.body.appendChild(bookBtn);
+  const book = document.createElement('div');
+  book.id = 'sb-book';
+  book.dataset.novocab = '1';
+  document.body.appendChild(book);
+  bookBtn.onclick = () => { book.style.display = book.style.display === 'block' ? 'none' : 'block'; renderBook(); };
+
+  function renderBook() {
+    bookBtn.textContent = '📒 我的生词本 (' + vocab.length + ')';
+    if (book.style.display !== 'block') return;
+    const esc = s => String(s || '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+    book.innerHTML = `<h4>📒 我的生词本</h4><div class="hint">用鼠标选中文章里不认识的词 → 点「📌 标为生词」，老师那边会同步收到。</div>` +
+      (vocab.length ? vocab.map(v => `<div class="it"><div><b>${esc(v.word)}</b> <span class="cx">· ${esc(v.task_type)} #${esc(v.set_num)}</span>` +
+        (v.context ? `<div class="cx">${esc(v.context.length > 90 ? v.context.slice(0, 90) + '…' : v.context)}</div>` : '') +
+        `</div><button title="删除" data-id="${esc(v.id)}">×</button></div>`).join('')
+        : '<div class="cx">还没有标记生词</div>');
+    book.querySelectorAll('button[data-id]').forEach(b => b.onclick = () => removeWord(b.dataset.id));
+  }
+
+  async function loadVocab(force) {
+    const name = A().getName();
+    if (!name) { vocab = []; vocabOwner = null; renderBook(); highlight(); return; }
+    if (!force && name === vocabOwner) return;
+    vocabOwner = name;
+    try {
+      vocab = await rpc('vocab_list', { p_name: name }) || [];
+    } catch (e) { console.warn('[vocab]', e); }
+    renderBook(); highlight();
+  }
+
+  function ensureName() {
+    let n = A().getName();
+    if (n) return n;
+    n = (prompt('请先输入你的名字（老师靠它认出你）') || '').trim();
+    if (n) A().setName(n);
+    return n;
+  }
+
+  function sentenceAround(text, word) {
+    if (!text) return '';
+    const sents = text.replace(/\s+/g, ' ').match(/[^.!?。！？]+[.!?。！？]*["”’)]*/g) || [text];
+    const re = new RegExp('\\b' + word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\b', 'i');
+    const s = sents.find(x => re.test(x)) || '';
+    return s.trim().slice(0, 400);
+  }
+
+  async function addWord(word, node) {
+    const name = ensureName();
+    if (!name) { toast('没有名字，生词没法保存'); return; }
+    if (vocabOwner !== name) await loadVocab(true);
+    if (vocab.some(v => v.word.toLowerCase() === word.toLowerCase())) { toast('「' + word + '」已经在生词本里了'); return; }
+    let ctx = '';
+    try { ctx = (A().contextFor && A().contextFor(word, node)) || ''; } catch (e) {}
+    if (!ctx) {
+      const blk = node && (node.nodeType === 1 ? node : node.parentElement);
+      const box = blk && blk.closest('p,div,li,td');
+      ctx = sentenceAround(box ? box.textContent : '', word);
+    }
+    const row = { id: uuid(), student_name: name, task_type: A().task, set_num: A().setNum(), word, context: ctx };
+    vocab.unshift(Object.assign({ created_at: new Date().toISOString() }, row));
+    renderBook(); highlight();
+    toast('已加入生词本：' + word);
+    try {
+      await rpc('vocab_add', { p: row });
+    } catch (e) {
+      console.warn('[vocab]', e);
+      vocab = vocab.filter(v => v.id !== row.id);
+      renderBook(); highlight();
+      toast('⚠ 生词保存失败，请检查网络后重试');
+    }
+  }
+
+  async function removeWord(id) {
+    const old = vocab;
+    vocab = vocab.filter(v => v.id !== id);
+    renderBook(); highlight();
+    try { await rpc('vocab_remove', { p_id: id, p_name: vocabOwner }); }
+    catch (e) { vocab = old; renderBook(); highlight(); toast('⚠ 删除失败，请检查网络'); }
+  }
+
+  /* 选中文字 → 浮出按钮 */
+  let selWord = '', selNode = null, snap = null;
+  const SKIP = 'input,textarea,select,option,button,[data-novocab]';
+  document.addEventListener('mousedown', e => {
+    if (tip.contains(e.target)) return;
+    tip.style.display = 'none';
+    try { snap = A().snapshot ? A().snapshot() : null; } catch (err) { snap = null; }
+  }, true);
+  function onSelEnd(e) {
+    if (e && tip.contains(e.target)) return;
+    setTimeout(() => {
+      const sel = window.getSelection();
+      const raw = sel ? sel.toString() : '';
+      const w = raw.replace(/\s+/g, ' ').trim().replace(/^[^A-Za-z]+|[^A-Za-z]+$/g, '');
+      if (!sel || sel.isCollapsed || !w || w.length > 40 || w.split(' ').length > 4 || !/[A-Za-z]/.test(w)) { tip.style.display = 'none'; return; }
+      const range = sel.getRangeAt(0);
+      const anc = range.commonAncestorContainer;
+      const el = anc.nodeType === 1 ? anc : anc.parentElement;
+      const root = document.querySelector(A().hlRoot);
+      if (!el || !root || !root.contains(el) || el.closest(SKIP)) { tip.style.display = 'none'; return; }
+      selWord = w; selNode = anc;
+      const rect = range.getBoundingClientRect();
+      tip.textContent = A().snapshot ? '📌 标为生词（不影响你的答案）' : '📌 标为生词';
+      tip.style.display = 'block';
+      tip.style.left = Math.max(8, window.scrollX + rect.left + rect.width / 2 - tip.offsetWidth / 2) + 'px';
+      tip.style.top = (window.scrollY + rect.top - tip.offsetHeight - 8) + 'px';
+    }, 0);
+  }
+  document.addEventListener('mouseup', onSelEnd);
+  document.addEventListener('touchend', onSelEnd);
+  tip.addEventListener('mousedown', e => e.preventDefault());
+  tip.addEventListener('click', () => {
+    tip.style.display = 'none';
+    if (snap && A().restore) { try { A().restore(snap); } catch (e) {} }
+    const w = selWord, n = selNode;
+    window.getSelection().removeAllRanges();
+    if (w) addWord(w, n);
+  });
+
+  /* 生词高亮：只改动需要改动的文本节点，避免打断学生的选区 */
+  let hlBusy = false;
+  function highlight() {
+    const root = document.querySelector(A().hlRoot);
+    if (!root || hlBusy) return;
+    hlBusy = true;
+    try {
+      const set = new Set(vocab.map(v => v.word.toLowerCase()));
+      let unwrapped = false;
+      root.querySelectorAll('span.sbv').forEach(s => {
+        if (!set.has(s.dataset.w)) { s.replaceWith(document.createTextNode(s.textContent)); unwrapped = true; }
+      });
+      if (unwrapped) root.normalize();
+      if (!set.size) return;
+      const words = [...set].sort((a, b) => b.length - a.length).map(w => w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&').replace(/ /g, '\\s+'));
+      const re = new RegExp('\\b(' + words.join('|') + ')\\b', 'gi');
+      const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
+        acceptNode: n => (n.parentElement.closest(SKIP + ',span.sbv,script,style') ? NodeFilter.FILTER_REJECT : NodeFilter.FILTER_ACCEPT)
+      });
+      const nodes = [];
+      while (walker.nextNode()) { re.lastIndex = 0; if (re.test(walker.currentNode.nodeValue)) nodes.push(walker.currentNode); }
+      nodes.forEach(n => {
+        const frag = document.createDocumentFragment();
+        const s = n.nodeValue;
+        let last = 0;
+        re.lastIndex = 0;
+        for (let m; (m = re.exec(s));) {
+          if (m.index > last) frag.appendChild(document.createTextNode(s.slice(last, m.index)));
+          const sp = document.createElement('span');
+          sp.className = 'sbv';
+          sp.dataset.w = m[0].toLowerCase().replace(/\s+/g, ' ');
+          sp.textContent = m[0];
+          frag.appendChild(sp);
+          last = m.index + m[0].length;
+        }
+        if (last < s.length) frag.appendChild(document.createTextNode(s.slice(last)));
+        n.replaceWith(frag);
+      });
+    } finally {
+      mo.takeRecords();
+      hlBusy = false;
+    }
+  }
+  const mo = new MutationObserver(() => { clearTimeout(highlight._t); highlight._t = setTimeout(highlight, 120); });
+
+  function start() {
+    const root = document.querySelector(A().hlRoot);
+    if (root) mo.observe(root, { childList: true, subtree: true, characterData: true });
+    if (!A().getName()) setBadge('', '☁ 填写名字后开始自动保存');
+    else setBadge('', '☁ 云同步已就绪');
+    loadVocab(true);
+  }
+
+  return { api, uuid, saveSubmission, findInProgress, markAbandoned, loadVocab, setBadge, toast, start };
+})();
+
+/* ================= Read and Complete 适配器 =================
+ * 依赖原页面的全局变量：cur, ans, left, done, SETS
+ * 以及函数：load, draw, grade
+ * answers = { fills: {空号: 已填字母}, text: 带填写的全文（老师后台实时显示用）, filled, total }
+ */
+(() => {
+  const NAME_KEY = 'sb_student_name';
+  const who = $('who');
+  let sid = SB.uuid();
+  let lastSig = '', lastBeat = 0;
+  try { who.value = localStorage.getItem(NAME_KEY) || ''; } catch (e) {}
+
+  const blanks = () => cur.tokens.filter(z => typeof z !== 'string');
+  const fillOf = (k, t) => { const a = (ans[k] || '').padEnd(t[1].length, ' '); return a.split('').map(c => c === ' ' ? '_' : c).join(''); };
+  function viewText() {
+    let k = 0;
+    return cur.tokens.map(t => typeof t === 'string' ? t : t[0] + fillOf(++k, t)).join('');
+  }
+  const filledCount = () => blanks().filter((t, i) => (ans[i + 1] || '').trim()).length;
+
+  window.SYNC_ADAPTER = {
+    task: 'RC',
+    hlRoot: '#passage',
+    getName: () => who.value.trim(),
+    setName: n => { who.value = n; onName(); },
+    setNum: () => cur.num
+  };
+
+  function row(status) {
+    return {
+      id: sid, student_name: who.value.trim(), set_num: cur.num, si: 0, status,
+      answers: { fills: ans, text: viewText(), filled: filledCount(), total: blanks().length, difficulty: cur.difficulty },
+      left_seconds: Math.max(left, 0), time_used_seconds: cur.timer - Math.max(left, 0)
+    };
+  }
+  function autosave() {
+    if (done || !who.value.trim()) return;
+    if (!filledCount()) return;
+    const sig = JSON.stringify([cur.num, ans, who.value.trim()]);
+    const now = Date.now();
+    if (sig !== lastSig || now - lastBeat > 20000) {
+      lastSig = sig; lastBeat = now;
+      SB.saveSubmission(row('in_progress'));
+    }
+  }
+  setInterval(autosave, 1500);
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'hidden' && !done && who.value.trim() && lastSig) SB.saveSubmission(row('in_progress'), { now: true });
+  });
+
+  /* ---------- 断点续做 ---------- */
+  async function tryRestore() {
+    const name = who.value.trim();
+    if (!name || done) return;
+    const num = cur.num;
+    let r;
+    try { r = await SB.findInProgress(name, num); } catch (e) { console.warn(e); return; }
+    if (!r || r.id === sid || cur.num !== num || done) return;
+    if (Date.now() - new Date(r.updated_at).getTime() > 7 * 86400e3) return;
+    const lf = r.left_seconds || 0;
+    if (confirm(`检测到你上次做 #${num} 还没交卷（已填 ${(r.answers && r.answers.filled) || 0} 个词，剩 ${Math.floor(lf / 60)} 分 ${lf % 60} 秒）。\n\n要接着上次继续做吗？\n（选「取消」则重新开始）`)) {
+      sid = r.id;
+      ans = Object.assign({}, (r.answers && r.answers.fills) || {});
+      if (lf > 0) left = lf;
+      lastSig = '';
+      draw();
+      SB.toast('已恢复上次的作答');
+    } else {
+      SB.markAbandoned(r.id).catch(() => {});
+    }
+  }
+  function onName() {
+    const n = who.value.trim();
+    try { localStorage.setItem(NAME_KEY, n); } catch (e) {}
+    SB.loadVocab();
+    if (n) SB.setBadge('', '☁ 云同步已就绪');
+    tryRestore();
+  }
+  who.addEventListener('change', onName);
+  who.addEventListener('keydown', e => { if (e.key === 'Enter') who.blur(); });
+
+  /* ---------- 换题：新的一次作答 ---------- */
+  const origLoad = load;
+  load = function (i) {
+    if (!done && lastSig && who.value.trim()) SB.saveSubmission(row('in_progress'), { now: true });
+    origLoad(i);
+    sid = SB.uuid(); lastSig = ''; lastBeat = 0;
+    tryRestore();
+  };
+
+  /* ---------- 交卷：上传逐词对错 ---------- */
+  function items() {
+    const out = [];
+    let k = 0;
+    cur.tokens.forEach((t, i) => {
+      if (typeof t === 'string') return;
+      k++;
+      const pre = cur.tokens.slice(Math.max(0, i - 3), i).map(x => typeof x === 'string' ? x : x[0] + x[1]).join('');
+      const post = (cur.tokens[i + 1] || '').toString().slice(0, 20);
+      const stuLetters = (ans[k] || '').padEnd(t[1].length, ' ');
+      const stu = (ans[k] || '').trim() ? t[0] + stuLetters.replace(/ /g, '_') : '';
+      out.push({
+        sec: '补全单词', q: `空 ${k}：…${pre.slice(-40)}${t[0]}${'_'.repeat(t[1].length)}${post}…`,
+        stu, key: t[0] + t[1], ok: stuLetters.toLowerCase() === t[1].toLowerCase()
+      });
+    });
+    return out;
+  }
+  const origGrade = grade;
+  grade = function () {
+    if (done) return;
+    if (!who.value.trim()) {
+      const n = (prompt('交卷前请输入你的名字（老师靠它认出你）') || '').trim();
+      if (n) { who.value = n; try { localStorage.setItem(NAME_KEY, n); } catch (e) {} }
+    }
+    origGrade();
+    const its = items();
+    const r = row('submitted');
+    r.grading = { items: its, difficulty: cur.difficulty };
+    r.score = its.filter(x => x.ok).length;
+    r.total = its.length;
+    if (r.student_name) {
+      SB.saveSubmission(r, { now: true });
+      $('result').insertAdjacentHTML('beforeend', '<div class="res">✅ 作答已自动发送给老师，不用再手动发送。</div>');
+    } else {
+      $('result').insertAdjacentHTML('beforeend', '<div class="todo">⚠ 没有填写名字，作答没有发送给老师。</div>');
+    }
+  };
+  $('submit').onclick = grade;
+
+  SB.start();
+  if (who.value.trim()) onName();
+
+  // 直达链接：页面地址末尾 #1566 → 直接打开这一题
+  function openFromHash() {
+    const n = Number(location.hash.slice(1));
+    const i = SETS.findIndex(s => s.num === n);
+    if (i >= 0 && cur.num !== n) load(i);
+  }
+  window.addEventListener('hashchange', openFromHash);
+  openFromHash();
+})();
+
+</script>
+</body></html>

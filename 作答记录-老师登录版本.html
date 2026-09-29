@@ -149,7 +149,7 @@ td.no{color:var(--red);font-weight:800}
 <section id="view-subs" hidden>
   <div class="bar">
     <span class="lbl">学生</span><select id="f-stu"></select>
-    <span class="lbl">题型</span><select id="f-task"><option value="">全部</option><option value="IR">Interactive Reading</option><option value="IW">Interactive Writing</option></select>
+    <span class="lbl">题型</span><select id="f-task"><option value="">全部</option><option value="RC">Read and Complete</option><option value="IR">Interactive Reading</option><option value="IW">Interactive Writing</option></select>
     <span class="lbl">状态</span><select id="f-status"><option value="submitted">已交卷</option><option value="in_progress">进行中</option><option value="active">已交卷 + 进行中</option><option value="all">全部（含已放弃）</option></select>
     <div class="spacer"></div>
     <button id="btn-readall">全部标为已读</button>
@@ -218,7 +218,7 @@ const SB_URL = 'https://br-cute-tahr-8eff7472.supabase.aidap-global.cn-beijing.v
 const client = supabase.createClient(SB_URL, SB_KEY);
 const $ = id => document.getElementById(id);
 const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
-const TASK = { IR: 'Interactive Reading', IW: 'Interactive Writing' };
+const TASK = { RC: 'Read and Complete', IR: 'Interactive Reading', IW: 'Interactive Writing' };
 const DET_TASK_TYPES = Object.keys(TASK);
 const isDetSubmission = r => !!r && DET_TASK_TYPES.includes(r.task_type);
 const ls = {
@@ -441,6 +441,11 @@ function liveCurrent(r) {
       : r.si === 1 ? '正在写 Part 1' : r.si === 2 ? '正在写 Part 2' : '准备中';
     return { stage, prompt: p.prompt || '', text: p.text || '', words: p.words || 0, min: p.min_words, secs: p.seconds };
   }
+  if (r.task_type === 'RC') {
+    const stage = r.status === 'submitted' ? `已交卷${r.total != null ? ` · 得分 ${r.score}/${r.total}` : ''}`
+      : `已填 ${a.filled || 0}/${a.total || '-'} 个词 · 剩余 ${mmss(r.left_seconds)}`;
+    return { stage, prompt: '', text: a.text || '' };
+  }
   const stage = r.status === 'submitted' ? `已交卷${r.total != null ? ` · 得分 ${r.score}/${r.total}` : ''}`
     : `第 ${(r.si || 0) + 1}/6 步（${IR_STAGES[r.si || 0]}）· 剩余 ${mmss(r.left_seconds)}`;
   const text = irRawRows(a).map(x => `${x.sec}${x.q ? ' ' + x.q : ''}：${x.stu || '—'}`).join('\n');
@@ -450,7 +455,13 @@ function liveCardHtml(r) {
   const c = liveCurrent(r);
   const prev = liveSeen[r.id];
   let textHtml;
-  if (prev && c.text !== prev.text && c.text.startsWith(prev.text.slice(0, Math.max(0, prev.text.length - 3)))) {
+  if (prev && c.text !== prev.text && r.task_type === 'RC') {
+    // RC：学生可能改文中任何位置，取公共前缀/后缀，中间变化部分标蓝
+    let i = 0; while (i < prev.text.length && i < c.text.length && c.text[i] === prev.text[i]) i++;
+    let j = 0; while (j < prev.text.length - i && j < c.text.length - i && c.text[c.text.length - 1 - j] === prev.text[prev.text.length - 1 - j]) j++;
+    textHtml = esc(c.text.slice(0, i)) + '<mark>' + esc(c.text.slice(i, c.text.length - j)) + '</mark>' + esc(c.text.slice(c.text.length - j));
+    liveSeen[r.id] = { text: c.text, at: Date.now() };
+  } else if (prev && c.text !== prev.text && c.text.startsWith(prev.text.slice(0, Math.max(0, prev.text.length - 3)))) {
     // 新增部分标蓝（允许学生删掉末尾几个字母再重打）
     let i = 0; while (i < prev.text.length && c.text[i] === prev.text[i]) i++;
     textHtml = esc(c.text.slice(0, i)) + '<mark>' + esc(c.text.slice(i)) + '</mark>';
@@ -616,6 +627,7 @@ function detailRows(r) {
     }));
   }
   if (r.grading && r.grading.items) return r.grading.items;
+  if (r.task_type === 'RC') return [{ sec: '补全单词', q: '', stu: (r.answers || {}).text || '', key: '', ok: null }];
   return irRawRows(r.answers).map(x => Object.assign({ key: '', ok: null }, x));
 }
 function renderDetail() {
@@ -633,7 +645,7 @@ function renderDetail() {
     </div>`;
   let body = '';
   if (r.status === 'in_progress') {
-    const step = r.task_type === 'IR' ? `第 ${(r.si || 0) + 1}/6 步（${IR_STAGES[r.si || 0]}），剩余 ${mmss(r.left_seconds)}` :
+    const step = r.task_type === 'RC' ? `已填 ${(r.answers || {}).filled || 0}/${(r.answers || {}).total || '-'} 个词，剩余 ${mmss(r.left_seconds)}` : r.task_type === 'IR' ? `第 ${(r.si || 0) + 1}/6 步（${IR_STAGES[r.si || 0]}），剩余 ${mmss(r.left_seconds)}` :
       ({ 1: '正在写 Part 1', 2: '正在写 Part 2' }[r.si] || '准备中');
     body += `<div class="live">⏳ 学生正在作答：${step}。页面会随学生作答实时更新。</div>`;
   }
