@@ -5,6 +5,7 @@
 **网站地址：https://baiiugun.github.io/det-practice/**
 
 - Interactive Writing 某一题直达：`https://baiiugun.github.io/det-practice/iw.html#23`
+- Interactive Reading 自制题库（Unlock 教材节选，901–920）某一套直达：`https://baiiugun.github.io/det-practice/ir-custom.html#901`
 - 老师查看（实时监考 + 评分，要用老师邮箱登录才能看到数据）：https://baiiugun.github.io/det-practice/作答记录-老师登录版本.html
 
 学生开始做题前要填**姓名拼音缩写**（例如 HQ）。交卷时自动生成作答编号 = 缩写 + 月日时分，例如 `HQ09241530`。
