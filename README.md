@@ -6,6 +6,8 @@
 
 - Interactive Writing 某一题直达：`https://baiiugun.github.io/det-practice/iw.html#23`
 - Interactive Reading 自制题库（Unlock 教材节选，901–920）某一套直达：`https://baiiugun.github.io/det-practice/ir-custom.html#901`
+- Write About the Photo Essential（944–973，共 30 题）：`https://baiiugun.github.io/det-practice/wp.html`；某题直达 `wp.html#944`，支持 60 秒计时和不计时练习、草稿保存与交卷。
+- 看图作文前台老师批改：`https://baiiugun.github.io/det-practice/wp.html?teacher=1`。与老师作答记录页共用云端批改；保留学生原稿，修改稿、点评和分数仅老师登录后可见。
 - 老师查看（实时监考 + 评分，要用老师邮箱登录才能看到数据）：https://baiiugun.github.io/det-practice/作答记录-老师登录版本.html
 
 学生开始做题前要填**姓名拼音缩写**（例如 HQ）。交卷时自动生成作答编号 = 缩写 + 月日时分，例如 `HQ09241530`。
