@@ -477,6 +477,7 @@ window.WPReview = (() => {
     $('review-student').innerHTML='<option value="all">全部学生</option>'+students.map(s=>`<option value="${esc(s)}">${esc(s)}</option>`).join('');
     if(students.includes(previous))$('review-student').value=previous;
     const rows=records.filter(r=>($('review-question').value==='all'||String(r.set_num)===$('review-question').value)&&($('review-student').value==='all'||r.student_name===$('review-student').value));
+    if(!isDirty()&&!rows.some(r=>r.id===chosen))chosen=rows[0]?.id||null;
     $('review-list').innerHTML=rows.length?rows.map(r=>`<button class="record ${r.id===chosen?'selected':''}" data-id="${r.id}"><b>${esc(r.answers?.code||r.student_name)}</b><br>#${r.set_num} · ${r.answers?.words||0} 词 · ${r.grading?.teacher?'已批改':'待批改'}</button>`).join(''):'<p class="empty">暂无已交卷作文。</p>';
     $('review-list').querySelectorAll('button').forEach(b=>b.onclick=()=>{if(b.dataset.id===chosen)return;if(!ensureLeave())return;delete detail.dataset.wpDirty;chosen=b.dataset.id;renderList();renderDetail();});
   }
@@ -511,11 +512,18 @@ window.WPReview = (() => {
   $('teacher-login').onsubmit=async e=>{e.preventDefault();if($('teacher-email').value.trim().toLowerCase()!==window.WP_TEACHER_EMAIL.toLowerCase()){$('teacher-login-status').textContent='请使用老师邮箱登录。';return;}$('teacher-login-status').textContent='登录中…';const {data,error}=await client.auth.signInWithPassword({email:$('teacher-email').value.trim(),password:$('teacher-password').value});if(error){$('teacher-login-status').textContent='登录失败：'+error.message;return;}$('teacher-password').value='';$('teacher-login-status').textContent='';await accept(data.session);};
   $('teacher-logout').onclick=async()=>{if(ensureLeave()){await client.auth.signOut();await accept(null);}};
   client.auth.onAuthStateChange((_event,session)=>{setTimeout(()=>accept(session),0);});
-  $('review-refresh').onclick=load;$('review-question').onchange=renderList;$('review-student').onchange=renderList;
+  $('review-refresh').onclick=load;
+  const previousFilters={question:$('review-question').value,student:$('review-student').value};
+  function filterChanged(kind){
+    const el=$(kind==='question'?'review-question':'review-student');
+    if(!ensureLeave()){el.value=previousFilters[kind];return;}
+    delete detail.dataset.wpDirty;previousFilters[kind]=el.value;renderList();renderDetail();
+  }
+  $('review-question').onchange=()=>filterChanged('question');$('review-student').onchange=()=>filterChanged('student');
   document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&!$('teacher-view').hidden)load();});
   setInterval(()=>{if(!$('teacher-view').hidden&&document.visibilityState==='visible')load();},30000);
   window.addEventListener('beforeunload',e=>{if(isDirty()){e.preventDefault();e.returnValue='';}});
-  if(params.get('teacher')==='1'){if(byNum(Number(location.hash.slice(1))))$('review-question').value=Number(location.hash.slice(1));window.WPTeacher.open();}
+  if(params.get('teacher')==='1'){if(byNum(Number(location.hash.slice(1))))$('review-question').value=Number(location.hash.slice(1));previousFilters.question=$('review-question').value;window.WPTeacher.open();}
 })();
 
 </script>

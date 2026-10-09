@@ -741,7 +741,7 @@ function renderDetail() {
   const r = subs.find(x => x.id === selId);
   if (!r) { box.innerHTML = '<div class="empty">← 点左边的一条记录查看作答</div>'; return; }
   const head = `<h2>${esc(codeOf(r) || r.student_name)} · ${esc(TASK[r.task_type] || r.task_type)} #${esc(r.set_num)}</h2>
-    <div class="sub">${statusChip(r.status)} · ${r.status === 'submitted' ? '交卷时间' : '最后更新'} ${fullTime(r.updated_at)}
+    <div class="sub">${statusChip(r.status)} · ${r.status === 'submitted' && r.task_type !== 'WP' ? '交卷时间' : '最后更新'} ${fullTime(r.updated_at)}
       ${r.time_used_seconds != null ? ' · 用时 ' + dur(r.time_used_seconds) : ''}
       ${r.total != null ? ` · 得分 <span class="score ${scoreCls(r)}">${r.score} / ${r.total}</span>` : ''}</div>
     <div class="acts">
