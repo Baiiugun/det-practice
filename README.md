@@ -4,6 +4,7 @@
 
 **网站地址：https://baiiugun.github.io/det-practice/**
 
+- Fill in the Blanks（单句补全单词，1000 题分 101 套，每套约 10 题，每题 20 秒）：`https://baiiugun.github.io/det-practice/fb.html`；某一套直达 `fb.html#26`（Super Easy 1–25、Easy 26–41、Medium 42–69、Hard 70–93、Super Hard 94–101）。老师在作答记录页把题型选「Fill in the Blanks」。
 - Interactive Writing 某一题直达：`https://baiiugun.github.io/det-practice/iw.html#23`
 - Interactive Reading 自制题库（Unlock 教材节选，901–920）某一套直达：`https://baiiugun.github.io/det-practice/ir-custom.html#901`
 - Write About the Photo Essential（944–973，共 30 题）：`https://baiiugun.github.io/det-practice/wp.html`；某题直达 `wp.html#944`，支持 60 秒计时和不计时练习、草稿保存与交卷。
