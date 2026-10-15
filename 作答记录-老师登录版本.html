@@ -39,9 +39,16 @@ header h1{font-size:16px;margin:0;font-weight:800}
 @media(max-width:860px){.main{grid-template-columns:1fr}}
 .card{background:var(--card);border:1px solid var(--border);border-radius:12px}
 .list{max-height:calc(100vh - 150px);overflow:auto}
-.item{padding:10px 12px;border-bottom:1px solid #f1f2f4;cursor:pointer;display:grid;grid-template-columns:1fr auto;gap:2px 8px}
+.item{padding:10px 12px;border-bottom:1px solid #f1f2f4;cursor:pointer;display:grid;grid-template-columns:auto 1fr auto;gap:2px 8px;user-select:none}
 .item:hover{background:#f9fafb}
 .item.sel{background:var(--blue-bg)}
+.item.picked{background:#fef9c3}
+.item.sel.picked{background:#dbeafe;box-shadow:inset 3px 0 0 #eab308}
+.item .pick{grid-row:1/3;grid-column:1;align-self:center;width:16px;height:16px;cursor:pointer}
+#sel-bar{position:sticky;top:0;z-index:2;background:#fff;border-bottom:1px solid #e5e7eb;padding:8px 12px;display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+#sel-bar button{padding:3px 9px;font-size:12.5px}
+#sel-bar .cnt{font-size:12.5px;color:var(--muted);margin-left:auto}
+#sel-bar .tip{flex-basis:100%;font-size:11.5px;color:var(--muted)}
 .item .nm{font-weight:700;display:flex;align-items:center;gap:6px}
 .item .nm .dot{width:8px;height:8px;border-radius:50%;background:#dc2626}
 .item .meta{font-size:12.5px;color:var(--muted)}
@@ -157,7 +164,16 @@ td.no{color:var(--red);font-weight:800}
     <button id="btn-export-subs" class="primary">⬇ 导出当前列表（Excel）</button>
   </div>
   <div class="main">
-    <div class="card list" id="sub-list"></div>
+    <div class="card list">
+      <div id="sel-bar">
+        <button id="s-all">全选</button><button id="s-inv">反选</button><button id="s-none">清除</button>
+        <button id="s-export" class="primary">⬇ 导出所选（Excel）</button>
+        <button id="s-copy">📋 复制所选</button>
+        <span class="cnt" id="s-cnt">已选 0 条</span>
+        <span class="tip">点方框勾选 · Shift+点击连选 · Ctrl（Mac 用 ⌘）+点击点选 · Ctrl+A 全选</span>
+      </div>
+      <div id="sub-list"></div>
+    </div>
     <div class="card" id="sub-detail"><div class="empty">← 点左边的一条记录查看作答</div></div>
   </div>
 </section>
@@ -674,21 +690,73 @@ function filteredSubs() {
     isDetSubmission(r) && (!stu || r.student_name === stu) && (!task || r.task_type === task) &&
     (st === 'all' || (st === 'active' ? r.status !== 'abandoned' : r.status === st)));
 }
+let subSel = new Set(), subAnchor = null;
 function renderSubs() {
   const list = filteredSubs();
+  const valid = new Set(list.map(r => r.id));
+  subSel = new Set([...subSel].filter(id => valid.has(id)));
   $('sub-list').innerHTML = list.length ? list.map(r => {
     const words = ['WP','WS'].includes(r.task_type) ? `<span class="meta">${r.answers?.words || 0} 词</span> ` : r.task_type === 'IW' && r.answers ? `<span class="meta">${(r.answers.part1?.words || 0) + (r.answers.part2?.words || 0)} 词</span> ` : '';
     const sc = words + (r.total != null ? `<span class="score ${scoreCls(r)}">${r.score}/${r.total}</span>`
       : ['IW','WP','WS'].includes(r.task_type) && r.status === 'submitted' ? '<span class="chip graded">待评分</span>' : '');
-    return `<div class="item${r.id === selId ? ' sel' : ''}" data-id="${r.id}">
+    return `<div class="item${r.id === selId ? ' sel' : ''}${subSel.has(r.id) ? ' picked' : ''}" data-id="${r.id}">
+      <input type="checkbox" class="pick"${subSel.has(r.id) ? ' checked' : ''}>
       <div class="nm">${isUnseen(r) ? '<span class="dot"></span>' : ''}${esc(r.student_name)}${codeOf(r) ? ` <span class="meta" style="font-weight:400">${esc(codeOf(r))}</span>` : ''}</div>
       <div class="right">${sc}</div>
       <div class="meta"><span class="chip task">${esc(r.task_type)} #${esc(r.set_num)}</span> ${statusChip(r.status)}</div>
       <div class="meta right">${fmtTime(r.updated_at)}</div>
     </div>`;
   }).join('') : '<div class="empty">没有符合条件的记录</div>';
-  $('sub-list').querySelectorAll('.item').forEach(el => el.onclick = () => openSub(el.dataset.id));
+  $('sub-list').querySelectorAll('.item').forEach(el => el.onclick = e => {
+    const id = el.dataset.id, isBox = e.target.classList.contains('pick');
+    const ids = filteredSubs().map(r => r.id);
+    const ctrl = e.ctrlKey || e.metaKey;
+    if (e.shiftKey && subAnchor && ids.includes(subAnchor)) {
+      // Shift：从锚点到当前连选；Ctrl+Shift 在原选择上追加，否则替换
+      const a = ids.indexOf(subAnchor), b = ids.indexOf(id);
+      const range = ids.slice(Math.min(a, b), Math.max(a, b) + 1);
+      if (!(ctrl || isBox)) subSel = new Set();
+      range.forEach(i => subSel.add(i));
+    } else if (ctrl || isBox) {
+      subSel.has(id) ? subSel.delete(id) : subSel.add(id);
+      subAnchor = id;
+    } else {
+      subAnchor = id;
+      openSub(id);
+      return;
+    }
+    syncSubSel();
+  });
+  syncSubSel();
 }
+function syncSubSel() {
+  document.querySelectorAll('#sub-list .item').forEach(el => {
+    const on = subSel.has(el.dataset.id);
+    el.classList.toggle('picked', on);
+    el.querySelector('.pick').checked = on;
+  });
+  $('s-cnt').textContent = `已选 ${subSel.size} 条`;
+  $('s-export').disabled = $('s-copy').disabled = !subSel.size;
+}
+function pickedSubs() { return filteredSubs().filter(r => subSel.has(r.id)); }
+$('s-all').onclick = () => { subSel = new Set(filteredSubs().map(r => r.id)); syncSubSel(); };
+$('s-none').onclick = () => { subSel.clear(); syncSubSel(); };
+$('s-inv').onclick = () => { subSel = new Set(filteredSubs().map(r => r.id).filter(id => !subSel.has(id))); syncSubSel(); };
+$('s-export').onclick = () => {
+  const list = pickedSubs();
+  if (!list.length) { toast('请先勾选要导出的记录'); return; }
+  csv([CSV_HEAD, ...list.flatMap(subCsvRows)], `作答记录-已选${list.length}条-${stamp()}.csv`);
+};
+$('s-copy').onclick = () => {
+  const list = pickedSubs();
+  if (!list.length) { toast('请先勾选要复制的记录'); return; }
+  copyText(list.map(subText).join('\n\n==============================\n\n'));
+};
+document.addEventListener('keydown', e => {
+  if (view !== 'subs' || !(e.ctrlKey || e.metaKey) || e.key.toLowerCase() !== 'a') return;
+  if (/^(INPUT|TEXTAREA|SELECT)$/.test(e.target.tagName) || e.target.isContentEditable) return;
+  e.preventDefault(); $('s-all').click();
+});
 function openSub(id) {
   if (selId !== id && $('sub-detail').dataset.wpDirty) {
     if (!confirm('有尚未保存的批改输入，确定切换作答吗？')) return;
